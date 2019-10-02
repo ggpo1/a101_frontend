@@ -1,30 +1,39 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/"></router-link>
+    <MenuBar />
+    <div class="routerview-wrapper">
+      <router-view/>
     </div>
-    <router-view/>
+    
   </div>
 </template>
 
+<script lang="ts" src="./App.ts" />
+
 <style>
+* { padding: 0; margin: 0; }
+html, body, #fullheight {
+  min-height: 100% !important;
+  height: 100%;
+  background: #e5e5e5;
+  height: 100%;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+  min-height: 100%;
+  
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+.routerview-wrapper {
+  width: 100%; height: 100%;
+  display: flex;
+
+  justify-content: center;
+  flex-direction: row;
 }
+
 </style>

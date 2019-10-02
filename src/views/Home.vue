@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <HelloWorld msg="a101"/>
+    <h3 class="hello">A101</h3>
   </div>
 </template>
 
@@ -11,3 +11,8 @@ import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 @Component( { components: { HelloWorld } } )
 export default class Home extends Vue {}
 </script>
+<style scoped>
+.hello {
+  margin-top: 100px;
+}
+</style>
