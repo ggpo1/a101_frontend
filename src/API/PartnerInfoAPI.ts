@@ -4,7 +4,9 @@ export default class PartnerInfoApi {
     /**
      * GetPartnerInfoByUserID
      */
-    public GetPartnerInfoByUserID(): PartnerInfo {
-        return new PartnerInfo(12, '123', '123', '123', '123');
+    public async GetPartnerInfoByUserID() {
+        let url = 'https://localhost:44336/api/partnerinfo/GetPartnerInfoByUserID?userID=2'
+        let response = await fetch(url);
+        // return new PartnerInfo(12, '123', '123', '123', '123');
     }
 }

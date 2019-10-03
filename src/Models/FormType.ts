@@ -1,6 +1,7 @@
 enum FormType {
-    INPUT,
-    BUTTON
+    INPUTBOX,
+    BUTTONBOX,
+    LABELBOX,
 }
 
 export default FormType;

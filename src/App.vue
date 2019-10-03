@@ -15,7 +15,7 @@
 html, body, #fullheight {
   min-height: 100% !important;
   height: 100%;
-  background: #e5e5e5;
+  background: #ffffff;
   height: 100%;
 }
 #app {

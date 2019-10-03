@@ -1,6 +1,6 @@
 <template>
   <div class="login-view-wrapper">
-    <Card class="card" :CardSource="CardSource"/>
+    <Card class="card" :CardSource="CardSource" :LoginData="LoginData" @updateValue="ValueUpdate" @buttonAction="LoginMethod()"/>
   </div>
 </template>
 
