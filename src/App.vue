@@ -1,17 +1,17 @@
 <template>
   <div id="app">
-    <MenuBar />
     <div class="routerview-wrapper">
-      <router-view/>
+      <router-view class="router-view" />
     </div>
-    
   </div>
 </template>
 
 <script lang="ts" src="./App.ts" />
 
 <style>
+
 * { padding: 0; margin: 0; }
+
 html, body, #fullheight {
   min-height: 100% !important;
   height: 100%;
@@ -34,6 +34,9 @@ html, body, #fullheight {
 
   justify-content: center;
   flex-direction: row;
+}
+.router-view {
+  height: 100%;
 }
 
 </style>

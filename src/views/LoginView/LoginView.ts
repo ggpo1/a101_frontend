@@ -4,6 +4,11 @@ import router from '@/router';
 import FormType from '@/Models/FormType';
 import FormTypeClass from '@/Models/FormTypeClass';
 import UserLoginDTO from '@/Models/DTO/UserLoginDTO';
+import PartnerInfoApi from '@/API/PartnerInfoAPI';
+import PartnerInfo from '@/Models/DataBase/PartnerInfo';
+import AuthAPI from '@/API/AuthAPI';
+import { UserInfo } from '@/Data/UserInfo';
+import UserLoginDTOResponse from '@/Models/DTO/Response/UserLoginDTOResponse';
 
 @Component({ components: { Card } })
 export default class LoginView extends Vue {
@@ -37,16 +42,45 @@ export default class LoginView extends Vue {
         },
     ];
 
-    mounted() {
-        
+    
+    
+    
+    public mounted() {
+        /*
+        if (UserInfo.UserAuth === null || UserInfo.UserAuth === undefined) {
+            router.push('login');
+        }
+        */
+       
+       if (localStorage.user_auth_status === 1) {
+           router.push('workspace');
+       }
     }
+    
     
     /**
      * LoginMethod
      */
-    public LoginMethod() {
-        
+    public async LoginMethod() {
+        let partner = new PartnerInfoApi();
+        let auth = new AuthAPI();
+        // partner.GetPartnerInfoByUserID();
+        let data = await auth.Auth(this.LoginData.Login, this.LoginData.Password);
+        if (data.status === 1) {
+            UserInfo.UserAuth = new UserLoginDTOResponse(
+                data.user,
+                data.status,
+            );
+            console.log('logged in!');
+            localStorage.setItem('user_auth_status', '1');
+            localStorage.setItem('user', JSON.stringify(data));
+            router.push('workspace');
+        } else {
+            alert('Неправильный логин или пароль!');
+        }        
     }
+
+
 
     /**
      * LoginMethod
