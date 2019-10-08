@@ -1,9 +1,11 @@
 <template>
     <div class="partner-wrapper" v-if="this.role == 0">
-        Партнер
+        <SideBar :source="PartnerSideBarSource" />
+        <ContentBar />
     </div>
     <div class="admin-wrapper" v-else-if="this.role == 1">
-        Админ
+        <SideBar @linkAction="adminLinkAction" :source="AdminSideBarSource" />
+        <ContentBar :partnersSource="partnersSource" :contentState="contentState" />
     </div>
     
 </template>
@@ -14,6 +16,20 @@
     .partner-wrapper {
         width: 100%;
         height: 100%;
-        background: red;
+        padding: 0%;
+        padding-left: 0;
+        padding-right: 0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .admin-wrapper {
+        width: 100%;
+        height: 100%;
+        padding: 0%;
+        padding-left: 0;
+        padding-right: 0;
+        display: flex;
+        justify-content: space-between;
     }
 </style>    

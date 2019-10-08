@@ -12,19 +12,17 @@
 
 * { padding: 0; margin: 0; }
 
-html, body, #fullheight {
-  min-height: 100% !important;
-  height: 100%;
-  background: #ffffff;
-  height: 100%;
-}
+html, body {margin:0;padding:0;height:100%;background: #293133}
+@import url('https://fonts.googleapis.com/css?family=Comfortaa&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  /*font-family: 'Avenir', Helvetica, Arial, sans-serif;*/
+  font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  min-height: 100%;
+  height: 100%;
   
 }
 
@@ -37,6 +35,7 @@ html, body, #fullheight {
 }
 .router-view {
   height: 100%;
+  width: 100%;
 }
 
 </style>

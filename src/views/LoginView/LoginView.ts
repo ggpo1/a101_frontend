@@ -93,8 +93,6 @@ export default class LoginView extends Vue {
             case 'passwordInput':
                 this.LoginData.Password = value;
                 break;
-            default:
-                break;
         }
     }
 }

@@ -8,13 +8,14 @@
 
 <style>
   .login-view-wrapper {
-    width: 100%; height: 100%;
+    width: 100%;  height: 190px;
     display: flex;
     justify-content: center;
   }
   
   .card {
     margin-top: 10%;
+    
   }
 
 </style>

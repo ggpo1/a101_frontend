@@ -6,7 +6,7 @@ export default class PartnerInfoApi {
      * GetPartnerInfoByUserID
      */
     public async GetPartnerInfoByUserID() {
-        let url = 'https://localhost:44336/api/partnerinfo/GetPartnerInfoByUserID?userID=2'
+        let url = 'http://192.168.50.8:44336/api/partnerinfo/GetPartnerInfoByUserID?userID=2'
         await fetch(url, { method: 'GET' })
         .then(response => response.json())
         .then((data) => {
@@ -18,5 +18,17 @@ export default class PartnerInfoApi {
             // console.log(this.todoTasks)
             
         });
+    }
+
+    public async GetPartners(): Promise<any> {
+        return new Promise(resolve => {
+            fetch('http://192.168.50.8:44336/api/partnerinfo/getpartners', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(body => {
+                resolve(body);
+            });
+          });
     }
 }

@@ -5,7 +5,7 @@ export default class AuthAPI {
      */
     public async Auth(Login: string, Password: string): Promise<any> {
         return new Promise(resolve => {
-            fetch('https://localhost:44336/api/auth', {
+            fetch('http://192.168.50.8:44336/api/auth', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -16,21 +16,7 @@ export default class AuthAPI {
             .then(body => {
                 resolve(body);
             });
-          });
-       /*
-          let a = (async () => {
-            const rawResponse = await fetch('https://localhost:44336/api/auth', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ Login: Login, Password: Password })
-            });
-            return await rawResponse.json();
-            // console.log(this.response)
-        })();
-        return await a;
-        */
+        });
     }
     
 }
