@@ -1,10 +1,18 @@
-interface IGetPartnersDTO {
-    user: {
-        userID: number,
-        userName: string,
-        passwordHash: string,
-        role: number,
+
+
+interface IMyCompaniesListingDTO {
+    companyID: number,
+    companyName: string,
+    contactPersonFullName: string,
+    contactPersonPhoneNumber: string,
+    contactPersonCompanyState: string,
+    status: number,
+    cityID: number,
+    city: {
+        cityID: number,
+        cityName: string,
     },
+    partnerInfoID: number,
     partnerInfo: {
         partnerInfoID: number,
         companyName: string,
@@ -24,7 +32,6 @@ interface IGetPartnersDTO {
         },
         cityID: number,
     },
-    city: string,
 }
 
-export default IGetPartnersDTO;
+export default IMyCompaniesListingDTO;

@@ -6,6 +6,10 @@ interface IModalEditSourceComponent {
     text?: string,
     inputMethod?: string,
     type: FormType,
+    selectOptions?: Array<{
+        id: number,
+        title: string,
+    }>,
 }
 
 interface IModalInformSource {

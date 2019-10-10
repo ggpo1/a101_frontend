@@ -11,7 +11,7 @@ interface INewPartnerDTO {
         CompanyName: string,
         CompanyState: string,
         PhoneNumber: string,
-        // CityID: number, // from combobox
+        CityID: number, // from combobox
         // UserID: number, // from user add response
     }
 }

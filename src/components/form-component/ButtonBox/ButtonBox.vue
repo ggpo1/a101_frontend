@@ -5,6 +5,10 @@
 <script lang="ts" src="./ButtonBox.ts" />
 
 <style scoped>
+button {
+    cursor: pointer;
+}
+
 .button-box {
     width: 102%;
     height: 30px;

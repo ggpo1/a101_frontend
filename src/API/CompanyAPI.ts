@@ -15,4 +15,16 @@ export default class CompanyApi {
             });
         });
     }
+
+    public async GetCompanies(): Promise<any> {
+        return new Promise(resolve => {
+            fetch('http://192.168.50.8:44336/api/company/', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(body => {
+                resolve(body);
+            });
+        });
+    }
 }

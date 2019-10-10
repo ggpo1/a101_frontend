@@ -26,6 +26,7 @@
         <div class="info-block">{{ item.contactPersonCompanyState }}</div>
         <div class="info-block">{{ item.contactPersonPhoneNumber }}</div>
         <div class="info-block">{{ item.city.cityName }}</div>
+        <div class="info-block">{{ getStatus(item.status) }}</div>
       </div>
     </section>
     <footer class="footer">
@@ -65,11 +66,13 @@
         <div>
           <LabelBox v-if="elem.type === 2" :title="elem.text" />
           <InputBox v-else-if="elem.type === 0" :inputName="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :title="elem.title" :id="'login_input_' + i" :inputMethod="elem.inputMethod" :placeHolder="elem.placeHolder" />
+          <SelectBox v-else-if="elem.type === 3" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :selectOptions="elem.selectOptions" />
+          <FileBox v-else-if="elem.type === 4" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" />
         </div>
       </div>
     </section>
     <footer class="footer">
-      <button @click="$emit('addNewPartner')" class="button-box">создать</button>
+      <button @click="$emit('addNew')" class="button-box">создать</button>
     </footer>
   </aside>
 
@@ -84,7 +87,7 @@
     position: absolute;
     width: 55%;
     border-radius: 5px;
-    height: 50%;
+    height: 55%;
     box-shadow: 0 3px 7px rgba(0,0,0,.25);
     -moz-box-shadow: 0 3px 7px rgba(0,0,0,.25);
     -webkit-box-shadow: 0 3px 7px rgba(0,0,0,.25);
@@ -217,7 +220,7 @@
   text-align: center;
 }
 .button-box {
-
+    cursor: pointer;
     width: 100%;
     height: 30px;
     border-radius: 5px;

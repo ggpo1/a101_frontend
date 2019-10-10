@@ -6,6 +6,8 @@ export default class PartnerInfo {
         public CompanyName: string,
         public FullName: string,
         public CompanyState: string,
-        public PhoneNumber: string
+        public PhoneNumber: string,
+        public userID?: number,
+        public cityID?: number,
     ) {}
 }
