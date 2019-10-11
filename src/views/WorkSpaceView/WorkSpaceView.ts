@@ -16,17 +16,20 @@ import IModalInformSource from '@/Models/Form/ModalView/IModalInformSource';
 import CompanyApi from '@/API/CompanyAPI';
 import ICompanyListingDTO from '@/Models/DTO/ICompanyListingDTO';
 import IMyCompaniesListingDTO from '@/Models/DTO/IMyCompaniesListingDTO';
+import DocumentInfo from '@/Models/DTO/DocumentInfo';
+import DocumentAPI from '@/API/DocumentAPI';
 
 @Component({ components: { SideBar, ContentBar, ModalView } })
 export default class WorkSpaceView extends Vue {
     public user!: UserLoginDTOResponse;
-    public partnerInfo!: any;
+    public partnerInfo: any = {};
     public role: number = 0;
     public adminContentState: string = 'partners';
     public partnerContentState: string= 'mycompanies';
     public partnersSource: IGetPartnersDTO[] = [];
     public companiesSource: ICompanyListingDTO[] = [];
     public partnerCompaniesSource: IMyCompaniesListingDTO[] = [];
+    public documentsSource: DocumentInfo[] = [];
     public modalState: boolean = true;
     public ModalInformSource: IModalInformSource = {
         title: 'Информация',
@@ -110,6 +113,9 @@ export default class WorkSpaceView extends Vue {
             console.log(this.companiesSource);
         } else if (link === 'documents') {
             // загрузка контента
+            let docAPI = new DocumentAPI();
+            this.documentsSource = await docAPI.GetDocs();
+            console.log(this.documentsSource);
         } else if (link === 'cities') {
             // загрузка контента
         }
@@ -144,13 +150,17 @@ export default class WorkSpaceView extends Vue {
             this.role = this.user.User.Role;
             let partnerAPI = new PartnerInfoApi();
             let companyAPI = new CompanyApi();
+            let docAPI = new DocumentAPI();
             this.companiesSource = await companyAPI.GetCompanies();
             this.partnersSource = await partnerAPI.GetPartners();
             console.log(this.partnersSource);
-            if (data.user.role === 0) {
-                this.partnerInfo = await partnerAPI.GetPartnerInfoByUserID(data.user.userID);
-                this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
-                console.log(this.partnerCompaniesSource);
+            
+            this.partnerInfo = await partnerAPI.GetPartnerInfoByUserID(data.user.userID);
+            this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
+            console.log(this.partnerCompaniesSource);
+            if (this.role === 1) {
+                this.documentsSource = await docAPI.GetDocs();
+                console.log(this.documentsSource);
             }
 
        }

@@ -1,11 +1,11 @@
 <template>
     <div class="partner-wrapper" v-if="this.role == 0">
         <SideBar @linkAction="partnerLinkAction" :source="PartnerSideBarSource" />
-        <ContentBar :companiesSource="partnerCompaniesSource" :contentState="partnerContentState" />
+        <ContentBar :documentsSource="documentsSource" :userPartnerInfo="partnerInfo" :companiesSource="partnerCompaniesSource" :contentState="partnerContentState" />
     </div>
     <div class="admin-wrapper" v-else-if="this.role == 1">
         <SideBar @linkAction="adminLinkAction" :source="AdminSideBarSource" />
-        <ContentBar :partnersSource="partnersSource" :companiesSource="companiesSource" :contentState="adminContentState" />
+        <ContentBar :documentsSource="documentsSource" :userPartnerInfo="partnerInfo" :partnersSource="partnersSource" :companiesSource="companiesSource" :contentState="adminContentState" />
     </div>
     
 </template>

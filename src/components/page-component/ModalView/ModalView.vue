@@ -20,13 +20,22 @@
       </div>
     </section>
     <section v-else-if="ModalPage === 1" class="modal-list">
-      <div class="partner-block" v-for="(item, i) in companies" v-bind:key="i" :id="'part_' + i">
-        <div class="info-block"><a @click="partnerBlockClick(item, 'select')" href="#">{{ item.companyName }}</a></div>
-        <div class="info-block">{{ item.contactPersonFullName }}</div>
-        <div class="info-block">{{ item.contactPersonCompanyState }}</div>
-        <div class="info-block">{{ item.contactPersonPhoneNumber }}</div>
-        <div class="info-block">{{ item.city.cityName }}</div>
-        <div class="info-block">{{ getStatus(item.status) }}</div>
+      <div v-if="modalPage2State === 'companies'">
+        <div class="partner-block" v-for="(item, i) in companies" v-bind:key="i" :id="'part_' + i">
+          <div class="info-block"><a @click="partnerBlockClick(item, '123select')" href="#">{{ item.companyName }}</a></div>
+          <div class="info-block">{{ item.contactPersonFullName }}</div>
+          <div class="info-block">{{ item.contactPersonCompanyState }}</div>
+          <div class="info-block">{{ item.contactPersonPhoneNumber }}</div>
+          <div class="info-block">{{ item.city.cityName }}</div>
+          <div class="info-block">{{ getStatus(item.status) }}</div>
+        </div>
+      </div>
+      <div v-else-if="modalPage2State === 'documents'">
+        <div class="partner-block" v-for="(item, i) in documents" v-bind:key="i" :id="'part_' + i">
+          <div class="info-block">{{ item.documentName }}</div>
+          <div class="info-block">{{ getDocStatus(item.documentStatus) }}</div>
+          <div class="info-block"><a :href="'http://192.168.50.8:44336/api/document/download?name=' + item.documentName" :download="item.documentName">скачать</a></div>
+        </div>
       </div>
     </section>
     <footer class="footer">

@@ -29,6 +29,7 @@
         :pages="partnerInfoModalPages"
         :companies="partnerCompanies"
         :ModalMode="'INFORM'"
+        :modalPage2State="'companies'"
         :ModalInformSource="ModalInformSource"
         v-if="modalPartnerInfoState"
       />
@@ -65,8 +66,11 @@
       </div>
       <ModalView
         @modalClose="modalClose"
+        @downloadAction="downloadAction"
         :pages="companyInfoModalPages"
         :ModalMode="'INFORM'"
+        :modalPage2State="'documents'"
+        :documents="selectedCompanyDocuments"
         :ModalInformSource="ModalInformSource"
         v-if="modalCompanyInfoState"
       />
@@ -81,12 +85,25 @@
     </div>
     <div class="admin-wrapper admin-documents-wrapper" v-if="contentState === 'documents'">
       <h3>Документы</h3>
+      <div
+        class="partner-block"
+        v-for="(elem, i) in documentsSource"
+        v-bind:key="i"
+        :id="'part_' + i"
+      >
+        <div class="info-block">{{ elem.documentName }}</div>
+        <div class="info-block">{{ getDocStatus(elem.documentStatus) }}</div>
+        <div class="info-block"><a :href="'http://192.168.50.8:44336/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
+      </div>
+    </div>
+    <div class="admin-wrapper admin-admin-wrapper" v-if="contentState === 'admins'">
+      <h3>Администраторы</h3>
     </div>
     <div class="admin-wrapper admin-cities-wrapper" v-if="contentState === 'cities'">
       <h3>Города</h3>
     </div>
 
-    <!-- partner admin section -->
+    <!-- partner section -->
     <div class="admin-wrapper admin-mycompanies-wrapper" v-if="contentState === 'mycompanies'">
       <h3>Мои компании</h3>
       <button @click="partnerCompanyGridAction(null, 'create')" class="button-box">добавить</button>

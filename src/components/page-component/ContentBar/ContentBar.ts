@@ -18,17 +18,44 @@ import DocumentStatus from '@/Models/Enums/DocumentStatus';
 import CompanyStatus from '@/Models/Enums/CompanyStatus';
 import INewCompanyDTO from '@/Models/DTO/INewCompanyDTO';
 import DocumentAPI from '@/API/DocumentAPI';
+import DocumentInfo from '@/Models/DTO/DocumentInfo';
+import CompanyInfo from '@/Models/DTO/CompanyInfo';
 
 @Component({ components: { ModalView, ButtonBox } })
 export default class ContentBar extends Vue {
     @Prop() public contentState!: string;
     @Prop() public partnersSource!: IGetPartnersDTO[];
     @Prop() public companiesSource!: ICompanyListingDTO[];
+    @Prop() public userPartnerInfo!: any;
+    @Prop() public documentsSource!: DocumentInfo[];
+
     public modalPartnerCreateState: boolean = false;
     public modalPartnerInfoState: boolean = false;
 
+    public selectedCompanyDocuments: DocumentInfo[] = [];
+
+    public partnersOptions: { id: number, title: string }[] = [];
+
     public modalCompanyCreateState: boolean = false;
     public modalCompanyInfoState: boolean = false;
+
+    public getDocStatus(status: number): string {
+        switch (status) {
+            case 0:
+                return 'На согласовании';
+            case 1:
+                return 'Подписан';
+            case 2:
+                return 'Не подписан';
+            case 3:
+                return 'Не оплачен';
+            case 4:
+                return 'Оплачен';
+            default:
+                break;
+        }
+        return 'null';
+    }
 
     public getStatus(status: number): string {
         switch (status) {
@@ -120,26 +147,68 @@ export default class ContentBar extends Vue {
     }
 
     public async AddNewCompany() {
-        // add new company
-        // console.log(this.addCompanyData);
-        // cityID по cityName ~
+        // объявляем переменные API
         let cityAPI = new CityAPI();
-        // this.addCompanyData.companyInfo.cityName = this.addCompanyData.companyInfo.cityName === '' ? '' : '';
+        let companyAPI = new CompanyApi();
+        let docAPI = new DocumentAPI();
 
+        // достаем айди города по его названию
         let data = await cityAPI.GetCityIDByName(this.addCompanyData.companyInfo.cityName);
         this.addCompanyData.company.cityID = data.cityID;
-        // console.log(this.addCompanyData.company.cityID);
 
-        // statusName +
+        // достаем айди статуса компании
         for (const i in this.CompanyStatuses) {
             this.CompanyStatuses[i].title === this.addCompanyData.companyInfo.statusName ? this.addCompanyData.company.status = this.CompanyStatuses[i].id : '';
         }
+
+        console.log(this.addCompanyData.company.status);
+
+        // достаем айди партнера
+        let partnerID: number = 0;
+        for (let i in this.partnersSource) {
+            if (this.addCompanyData.companyInfo.partner === this.partnersSource[i].partnerInfo.companyName + ' - ' 
+                + this.partnersSource[i].partnerInfo.fullName + ' - ' 
+                + this.partnersSource[i].partnerInfo.companyState + ' - '
+                + this.partnersSource[i].city) {
+                    partnerID = this.partnersSource[i].partnerInfo.partnerInfoID;
+            }
+        }
         
-        // partner 
-        console.log(this.addCompanyData.companyInfo.partner);
-        let docAPI = new DocumentAPI();
+        // добавляем компанию и получаем companyID для добавления информации о документе в базу данных
+        let companyInfo: CompanyInfo = {
+            CompanyID: 0,
+            CompanyName: this.addCompanyData.company.companyName,
+            ContactPersonFullName: this.addCompanyData.company.contactPersonFullName,
+            ContactPersonPhoneNumber: this.addCompanyData.company.contactPersonPhoneNumber,
+            ContactPersonCompanyState: this.addCompanyData.company.contactPersonCompanyState,
+            Status: this.addCompanyData.company.status,
+            CityID: this.addCompanyData.company.cityID,
+            PartnerInfoID: partnerID
+        }
+
+        // добавляем информацию о компании и получаем обратно ее айди
+        let companyID = await companyAPI.AddNewCompanyInfo(companyInfo);
+        
+        // закачиваем документ на сервер
         docAPI.AddNewDocument(this.addCompanyData.companyInfo.file);
 
+        // формируем объект с информацией о документе для отправки на сервер
+        let documentInfo: DocumentInfo = {
+            DocumentID: 0,
+            DocumentName: this.addCompanyData.companyInfo.file.name,
+            PartnerInfoID: partnerID,
+            CompanyID: companyID.companyID,
+            DocumentStatus: DocumentStatus.MATCHING
+        }
+
+        // отправляем информацию о документе на сервер
+        docAPI.AddNewDocumentInfo(documentInfo);
+
+        // скрываем модалку добавления компании
+        this.modalCompanyCreateState = false;
+
+        // обновляем сурсу
+        this.companiesSource = await companyAPI.GetCompanies();
     }
 
     public async AddNewPartner() {
@@ -304,14 +373,14 @@ export default class ContentBar extends Vue {
 
                 // выборка партнеров для селектора партнеров
                 // Компания - Имя - Должность - Город
-                let partnersOptions: { id: number, title: string }[] = [];
-                partnersOptions.push({ id: 0, title: 'Выберите партнера...' });
+                this.partnersOptions = [];
+                this.partnersOptions.push({ id: 0, title: 'Выберите партнера...' });
                 for (let i in this.partnersSource) {
                     let _title = this.partnersSource[i].partnerInfo.companyName + ' - ' 
                                     + this.partnersSource[i].partnerInfo.fullName + ' - ' 
                                     + this.partnersSource[i].partnerInfo.companyState + ' - '
                                     + this.partnersSource[i].city;
-                    partnersOptions.push(
+                    this.partnersOptions.push(
                         {
                             id: Number.parseInt(i),
                             title: _title,
@@ -351,7 +420,7 @@ export default class ContentBar extends Vue {
                         {
                             name: 'companyPartner', // for emit
                             title: 'Партнер',
-                            selectOptions: partnersOptions,
+                            selectOptions: this.partnersOptions,
                             type: FormType.SELECTBOX,
                         },
                         {
@@ -370,6 +439,8 @@ export default class ContentBar extends Vue {
                 break;
             case 'select':
                 console.log(elem);
+                let docAPI = new DocumentAPI();
+
                 this.ModalInformSource = {
                     title: 'Информация о компании',
                     components: [
@@ -411,6 +482,9 @@ export default class ContentBar extends Vue {
                         },
                     ],
                 }
+
+                this.selectedCompanyDocuments = await docAPI.GetCompanyDocs(elem.company.companyID);
+                console.log(this.selectedCompanyDocuments);
                 this.modalCompanyInfoState = true;
                 break;
 
@@ -556,6 +630,18 @@ export default class ContentBar extends Vue {
             default:
                 break;
         }
+    }
+
+    public async downloadAction(item: any) {
+        console.log(item);
+        // let docAPI = new DocumentAPI();
+        // let file = await docAPI.Download(item.documentName);
+
+        // var link = document.createElement('a');
+        
+        window.open('http://192.168.50.8:44336/api/document/download?name=' + item.documentName, '_newtab');
+
+
     }
 
     /**
