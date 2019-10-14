@@ -33,7 +33,20 @@ export default class CompanyApi {
         });
     }
 
+    // удаление информации о компании
+    public async RemoveCompany(companyID: number): Promise<any> {
+        return new Promise(resolve => {
+            fetch('http://192.168.50.8:44336/api/company/' + companyID, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(body => {
+                resolve(body);
+            });
+        });
+    }
 
+    // получение яписка всех компаний
     public async GetCompanies(): Promise<any> {
         return new Promise(resolve => {
             fetch('http://192.168.50.8:44336/api/company/', {

@@ -49,6 +49,19 @@ export default class DocumentAPI {
         });
     }
 
+    // удаление информации о компании
+    public async RemoveDocumentInfo(companyID: number): Promise<any> {
+        return new Promise(resolve => {
+            fetch('http://192.168.50.8:44336/api/document/' + companyID, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(body => {
+                resolve(body);
+            });
+        });
+    }
+
     // получение списка документов по айди компании
     public async GetCompanyDocs(companyID: number): Promise<any> {
         return new Promise(resolve => {

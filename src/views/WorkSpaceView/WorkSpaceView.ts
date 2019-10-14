@@ -88,7 +88,7 @@ export default class WorkSpaceView extends Vue {
             let companyAPI = new CompanyApi();
             // this.companiesSource = await companyAPI.GetPartnerCompanies();
             // console.log(this.partnerInfo);
-
+            this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
         } else if (link === 'mydocuments') {
             // загрузка контента
         }

@@ -10,6 +10,7 @@ interface IModalEditSourceComponent {
         id: number,
         title: string,
     }>,
+    hasHint?: boolean,
 }
 
 interface IModalInformSource {

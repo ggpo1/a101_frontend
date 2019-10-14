@@ -15,7 +15,10 @@
           <strong>{{ elem.title }}:</strong>
         </div>
         <div>
-          <LabelBox  v-if="elem.type === 2" :title="elem.text" />
+          <LabelBox v-if="elem.type === 2 && (elem.hasHint === false || elem.hasHint === undefined)" :title="elem.text" />
+          <a href="#" v-if="elem.type === 2 && elem.hasHint === true">
+            {{ elem.text }}
+          </a>          
         </div>
       </div>
     </section>
@@ -36,6 +39,9 @@
           <div class="info-block">{{ getDocStatus(item.documentStatus) }}</div>
           <div class="info-block"><a :href="'http://192.168.50.8:44336/api/document/download?name=' + item.documentName" :download="item.documentName">скачать</a></div>
         </div>
+      </div>
+      <div v-else-if="modalPage2State === 'else'">
+        
       </div>
     </section>
     <footer class="footer">
@@ -251,5 +257,7 @@
     background: #5cb95c;
     color: white;
 }
+
+
 
 </style>

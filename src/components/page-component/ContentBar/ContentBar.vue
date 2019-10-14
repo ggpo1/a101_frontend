@@ -2,9 +2,9 @@
   <div class="contentbar-wrapper">
     <div class="admin-wrapper admin-partners-wrapper" v-if="contentState === 'partners'">
       <h3>Партнеры</h3>
+      <SearchBar />
       <button @click="partnerBlockClick(null, 'create')" class="button-box">добавить</button>
       <div
-        
         v-for="(elem, i) in partnersSource"
         v-bind:key="i"
         :id="'part_' + i"
@@ -17,9 +17,12 @@
           <div class="info-block">{{ elem.partnerInfo.companyState }}</div>
           <div class="info-block">{{ elem.partnerInfo.phoneNumber }}</div>
           <div class="info-block">{{ elem.city }}</div>
-          <div class="info-block buttons-wrapper">
-            <div @click="partnerBlockClick(elem, 'edit')" class="btn edit-button">изменить</div>
-            <div @click="partnerBlockClick(elem, 'delete')" class="btn remove-button">удалить</div>
+          <div class="buttons-wrapper">
+            <img @click="partnerBlockClick(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
+            <img @click="partnerBlockClick(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+            <!-- <div  class="btn remove-button">удалить</div> -->
+            <!-- <div class="btn edit-button">изменить</div>  -->
+            
           </div>
         </div>
         
@@ -44,6 +47,7 @@
     </div>
     <div class="admin-wrapper admin-companies-wrapper" v-if="contentState === 'companies'">
       <h3>Компании</h3>
+      <SearchBar />
       <button @click="companyBlockClick(null, 'create')" class="button-box">добавить</button>
       <div
         class="partner-block"
@@ -59,9 +63,11 @@
         <div class="info-block">{{ elem.company.contactPersonPhoneNumber }}</div>
         <div class="info-block">{{ elem.city.cityName }}</div>
         <div class="info-block">{{ getStatus(elem.company.status) }}</div>
-        <div class="info-block buttons-wrapper">
-          <div @click="companyBlockClick(elem, 'edit')" class="btn edit-button">изменить</div>
-          <div @click="companyBlockClick(elem, 'delete')" class="btn remove-button">удалить</div>
+        <div class="buttons-wrapper">
+          <img @click="companyBlockClick(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
+          <img @click="companyBlockClick(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+          <!-- <div @click="companyBlockClick(elem, 'edit')" class="btn edit-button">изменить</div>
+          <div @click="companyBlockClick(elem, 'delete')" class="btn remove-button">удалить</div> --> 
         </div>
       </div>
       <ModalView
@@ -85,6 +91,7 @@
     </div>
     <div class="admin-wrapper admin-documents-wrapper" v-if="contentState === 'documents'">
       <h3>Документы</h3>
+      <SearchBar />
       <div
         class="partner-block"
         v-for="(elem, i) in documentsSource"
@@ -98,6 +105,7 @@
     </div>
     <div class="admin-wrapper admin-admin-wrapper" v-if="contentState === 'admins'">
       <h3>Администраторы</h3>
+      <SearchBar />
     </div>
     <div class="admin-wrapper admin-cities-wrapper" v-if="contentState === 'cities'">
       <h3>Города</h3>
@@ -106,6 +114,7 @@
     <!-- partner section -->
     <div class="admin-wrapper admin-mycompanies-wrapper" v-if="contentState === 'mycompanies'">
       <h3>Мои компании</h3>
+      <SearchBar />
       <button @click="partnerCompanyGridAction(null, 'create')" class="button-box">добавить</button>
       <div
         class="partner-block"
@@ -121,29 +130,36 @@
         <div class="info-block">{{ elem.contactPersonPhoneNumber }}</div>
         <div class="info-block">{{ elem.city.cityName }}</div>
         <div class="info-block">{{ getStatus(elem.status) }}</div>
-        <div class="info-block buttons-wrapper">
-          <div @click="partnerCompanyGridAction(elem, 'edit')" class="btn edit-button">изменить</div>
-          <div @click="partnerCompanyGridAction(elem, 'delete')" class="btn remove-button">удалить</div>
+        <div class="buttons-wrapper">
+          <img @click="partnerCompanyGridAction(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
+          <img @click="partnerCompanyGridAction(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+          <!-- <div @click="partnerCompanyGridAction(elem, 'edit')" class="btn edit-button">изменить</div>
+          <div @click="partnerCompanyGridAction(elem, 'delete')" class="btn remove-button">удалить</div> -->
         </div>
       </div>
       <ModalView
         @modalClose="modalClose"
+        @downloadAction="downloadAction"
         :pages="companyInfoModalPages"
         :ModalMode="'INFORM'"
+        :modalPage2State="'documents'"
+        :documents="selectedCompanyDocuments"
         :ModalInformSource="ModalInformSource"
-        v-if="modalCompanyInfoState"
+        v-if="modalMyCompanyInfoState"
       />
+      
       <ModalView
         @modalClose="modalClose"
-        @addNew="AddNewCompany"
-        @updateValue="CreateCompanyValueUpdate"
+        @addNew="AddNewMyCompany"
+        @updateValue="CreatePartnerCompanyValueUpdate"
         :ModalMode="'CREATE'"
         :ModalCreateSource="ModalCreateSource"
-        v-if="modalCompanyCreateState"
+        v-if="modalMyCompanyCreateState"
       />
     </div>
     <div class="admin-wrapper admin-mydocuments-wrapper" v-if="contentState === 'mydocuments'">
       <h3>Мои документы</h3>
+      <SearchBar />
     </div>
   </div>
 </template>
@@ -162,8 +178,17 @@
   justify-content: center;
   overflow-x: none;
   overflow-y: auto;
-  font-size: 14pt;
+  font-size: 90%;
+  padding-bottom: 2%;
 }
+
+.button-icon {
+  width: auto;
+  height: 30%;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
 .admin-wrapper {
   width: 90%;
   height: 90%;
@@ -218,6 +243,7 @@
 
 .buttons-wrapper {
   display: flex;
+  height: 25%;
 }
 
 .button-box {
