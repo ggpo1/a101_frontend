@@ -91,6 +91,8 @@ export default class WorkSpaceView extends Vue {
             this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
         } else if (link === 'mydocuments') {
             // загрузка контента
+            let docAPI = new DocumentAPI();
+            this.documentsSource = await docAPI.GetPartnerDocs(this.partnerInfo.partnerInfoID);
         }
         
         this.partnerContentState = link;
@@ -157,6 +159,7 @@ export default class WorkSpaceView extends Vue {
             
             this.partnerInfo = await partnerAPI.GetPartnerInfoByUserID(data.user.userID);
             this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
+            this.documentsSource = await docAPI.GetPartnerDocs(this.partnerInfo.partnerInfoID);
             console.log(this.partnerCompaniesSource);
             if (this.role === 1) {
                 this.documentsSource = await docAPI.GetDocs();

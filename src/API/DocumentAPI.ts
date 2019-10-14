@@ -49,7 +49,7 @@ export default class DocumentAPI {
         });
     }
 
-    // удаление информации о компании
+    // удаление информации о документе
     public async RemoveDocumentInfo(companyID: number): Promise<any> {
         return new Promise(resolve => {
             fetch('http://192.168.50.8:44336/api/document/' + companyID, {
@@ -66,6 +66,19 @@ export default class DocumentAPI {
     public async GetCompanyDocs(companyID: number): Promise<any> {
         return new Promise(resolve => {
             fetch('http://192.168.50.8:44336/api/document/getCompanyDocs?companyID=' + companyID, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(body => {
+                resolve(body);
+            });
+        });
+    }
+
+    // получение списка документов по айди партнера
+    public async GetPartnerDocs(partnerID: number): Promise<any> {
+        return new Promise(resolve => {
+            fetch('http://192.168.50.8:44336/api/document/getPartnerDocs?partnerID=' + partnerID, {
                 method: 'GET'
             })
             .then(response => response.json())

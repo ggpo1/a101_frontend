@@ -88,6 +88,14 @@
         :ModalCreateSource="ModalCreateSource"
         v-if="modalCompanyCreateState"
       />
+      <ModalView
+        @modalClose="modalClose"
+        @addNew="UpdateCompany"
+        @updateValue="CreateCompanyValueUpdate"
+        :ModalMode="'EDIT'"
+        :ModalCreateSource="ModalCreateSource"
+        v-if="modalCompanyEditState"
+      />
     </div>
     <div class="admin-wrapper admin-documents-wrapper" v-if="contentState === 'documents'">
       <h3>Документы</h3>
@@ -160,6 +168,41 @@
     <div class="admin-wrapper admin-mydocuments-wrapper" v-if="contentState === 'mydocuments'">
       <h3>Мои документы</h3>
       <SearchBar />
+      <button @click="documentWork(null, 'create')" class="button-box">добавить</button>
+      <div
+        class="partner-block"
+        v-for="(elem, i) in documentsSource"
+        v-bind:key="i"
+        :id="'part_' + i"
+      >
+        <div class="info-block">{{ elem.documentName }}</div>
+        <div class="info-block">{{ getDocStatus(elem.documentStatus) }}</div>
+        <div class="info-block"><a :href="'http://192.168.50.8:44336/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
+        <div class="buttons-wrapper">
+          <img @click="documentWork(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
+          <img @click="documentWork(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+          <!-- <div @click="partnerCompanyGridAction(elem, 'edit')" class="btn edit-button">изменить</div>
+          <div @click="partnerCompanyGridAction(elem, 'delete')" class="btn remove-button">удалить</div> -->
+        </div>
+      </div>
+      <ModalView
+        @modalClose="modalClose"
+        @downloadAction="downloadAction"
+        :pages="companyInfoModalPages"
+        :ModalMode="'INFORM'"
+        :modalPage2State="'documents'"
+        :documents="selectedCompanyDocuments"
+        :ModalInformSource="ModalInformSource"
+        v-if="modalMyCompanyInfoState"
+      />
+      <ModalView
+        @modalClose="modalClose"
+        @addNew="AddNewDocument('partner')"
+        @updateValue="CreateDocumentValueUpdate"
+        :ModalMode="'CREATE'"
+        :ModalCreateSource="ModalCreateSource"
+        v-if="modalMyDocumentCreateState"
+      />
     </div>
   </div>
 </template>

@@ -49,21 +49,6 @@
     </footer>
   </aside>
 
-  <aside v-else-if="ModalMode === 'EDIT'" class="modal" id="modal">
-    <header class="modal-header">
-      <h2 class="modal-title">{{ ModalEditSource.title }}</h2>
-      <div class="modal-exit-button" @click="$emit('modalClose')">
-        <div>
-          &#10006;
-        </div>
-      </div>
-    </header>
-    <section></section>
-    <footer class="footer">
-      <button @click="$emit('addNewPartner')" class="button-box">сохранить</button>
-    </footer>
-  </aside>
-
   <aside v-else-if="ModalMode === 'CREATE'" class="modal" id="modal">
     <header class="modal-header">
       <h2 class="modal-title">{{ ModalCreateSource.title }}</h2>
@@ -90,7 +75,32 @@
       <button @click="$emit('addNew')" class="button-box">создать</button>
     </footer>
   </aside>
-
+  <aside v-else-if="ModalMode === 'EDIT'" class="modal" id="modal">
+    <header class="modal-header">
+      <h2 class="modal-title">{{ ModalCreateSource.title }}</h2>
+      <div class="modal-exit-button" @click="$emit('modalClose')">
+        <div>
+          &#10006;
+        </div>
+      </div>
+    </header>
+    <section class="modal-content">
+      <div class="inform-label" classs v-for="(elem, i) in ModalCreateSource.components" v-bind:key="i">
+        <div style="display: flex; flex-direction: column; justify-content: center;">
+          <strong>{{ elem.title }}:</strong>
+        </div>
+        <div>
+          <LabelBox v-if="elem.type === 2" :title="elem.text" />
+          <InputBox v-else-if="elem.type === 0" :inputName="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :title="elem.title" :id="'login_input_' + i" :inputMethod="elem.inputMethod" :placeHolder="elem.placeHolder" />
+          <SelectBox v-else-if="elem.type === 3" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :selectOptions="elem.selectOptions" />
+          <FileBox v-else-if="elem.type === 4" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" />
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <button @click="$emit('addNew')" class="button-box">сохранить</button>
+    </footer>
+  </aside>
 </template>
 
 <script lang="ts" src="./ModalView.ts" />

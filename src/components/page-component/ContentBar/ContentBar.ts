@@ -39,9 +39,12 @@ export default class ContentBar extends Vue {
 
     public modalCompanyCreateState: boolean = false;
     public modalCompanyInfoState: boolean = false;
+    public modalCompanyEditState: boolean = false;
 
     public modalMyCompanyCreateState: boolean = false;
     public modalMyCompanyInfoState: boolean = false;
+
+    public modalMyDocumentCreateState: boolean = false;
 
     public getDocStatus(status: number): string {
         switch (status) {
@@ -150,6 +153,12 @@ export default class ContentBar extends Vue {
         this.modalCompanyCreateState = false;
         this.modalMyCompanyCreateState = false;
         this.modalMyCompanyInfoState = false;
+        this.modalMyDocumentCreateState = false;
+        this.modalCompanyEditState = false;
+    }
+
+    public UpdateCompany() {
+
     }
 
     public async AddNewCompany() {
@@ -364,11 +373,6 @@ export default class ContentBar extends Vue {
         }
     }
 
-
-
-
-
-
     public CompanyStatuses = [
         {
             id: 0,
@@ -401,6 +405,33 @@ export default class ContentBar extends Vue {
         {
             id: CompanyStatus.DONE,
             title: 'Услуга выполнена',
+        },
+    ]
+
+    public DocsStatuses = [
+        {
+            id: 0,
+            title: 'Выберите статус...',
+        },
+        {
+            id: DocumentStatus.MATCHING,
+            title: 'На согласовании',
+        },
+        {
+            id: DocumentStatus.SIGNED,
+            title: 'Подписан',
+        },
+        {
+            id: DocumentStatus.NOT_SIGNED,
+            title: 'Не подписан',
+        },
+        {
+            id: DocumentStatus.NOT_PAID,
+            title: 'Не оплачен',
+        },
+        {
+            id: DocumentStatus.PAID,
+            title: 'Оплачен',
         },
     ]
 
@@ -465,7 +496,7 @@ export default class ContentBar extends Vue {
                 break;
 
             case 'select':
-                
+
                 console.log(elem);
 
                 this.ModalInformSource = {
@@ -518,7 +549,7 @@ export default class ContentBar extends Vue {
                 response = await companyAPI.RemoveCompany(elem.companyID);
                 console.log(response);
 
-                this.companiesSource = await companyAPI.GetPartnerCompanies(this.userPartnerInfo.partnerInfoID)
+                this.companiesSource = await companyAPI.GetPartnerCompanies(this.userPartnerInfo.partnerInfoID);
                 break;
             default:
                 break;
@@ -697,10 +728,91 @@ export default class ContentBar extends Vue {
                 break;
 
             case 'edit':
-
+                    let _cityAPI = new CityAPI();
+                    let _cities = await _cityAPI.GetCities();
+                    let _cSO: { id: number, title: string }[] = [];
+                    _cSO.push({ id: 0, title: 'Выберите город...' });
+                    for (let index = 0; index < _cities.length; index++) {
+                        _cSO.push({ id: cities[index].cityID, title: cities[index].cityName });
+                    }
+                    this.modalCompanyCreateState = true;
+    
+                    // выборка партнеров для селектора партнеров
+                    // Компания - Имя - Должность - Город
+                    this.partnersOptions = [];
+                    this.partnersOptions.push({ id: 0, title: 'Выберите партнера...' });
+                    for (let i in this.partnersSource) {
+                        let _title = this.partnersSource[i].partnerInfo.companyName + ' - '
+                            + this.partnersSource[i].partnerInfo.fullName + ' - '
+                            + this.partnersSource[i].partnerInfo.companyState + ' - '
+                            + this.partnersSource[i].city;
+                        this.partnersOptions.push(
+                            {
+                                id: Number.parseInt(i),
+                                title: _title,
+                            }
+                        );
+                    }
+    
+                    this.ModalCreateSource = {
+                        title: 'Изменение компании',
+                        components: [
+                            {
+                                name: 'companyNameEdit', // for emit
+                                title: 'Название компании',
+                                type: FormType.INPUTBOX,
+                            },
+                            {
+                                name: 'companyPersonFullNameEdit', // for emit
+                                title: 'Контактное лицо',
+                                type: FormType.INPUTBOX,
+                            },
+                            {
+                                name: 'companyPersonPhoneNumberEdit', // for emit
+                                title: 'Тел.',
+                                type: FormType.INPUTBOX,
+                            },
+                            {
+                                name: 'companyPersonState', // for emit
+                                title: 'Должность',
+                                type: FormType.INPUTBOX,
+                            },
+                            {
+                                name: 'companyCity', // for emit
+                                title: 'Город',
+                                selectOptions: _cSO,
+                                type: FormType.SELECTBOX,
+                            },
+                            {
+                                name: 'companyPartner', // for emit
+                                title: 'Партнер',
+                                selectOptions: this.partnersOptions,
+                                type: FormType.SELECTBOX,
+                            },
+                            {
+                                name: 'companyDocument',
+                                title: 'Документ',
+                                type: FormType.FILEBOX, // type file
+                            },
+                            {
+                                name: 'companyStatus', // for emit
+                                title: 'Статус',
+                                selectOptions: this.CompanyStatuses,
+                                type: FormType.SELECTBOX,
+                            },
+                        ],
+                    }
+                    this.modalCompanyEditState = true;
                 break;
             case 'delete':
+                let _docAPI = new DocumentAPI();
+                let companyAPI = new CompanyApi();
+                let response = await _docAPI.RemoveDocumentInfo(elem.company.companyID);
+                console.log(response)
+                response = await companyAPI.RemoveCompany(elem.company.companyID);
+                console.log(response);
 
+                this.companiesSource = await companyAPI.GetCompanies();
                 break;
             default:
                 break;
@@ -850,6 +962,152 @@ export default class ContentBar extends Vue {
         window.open('http://192.168.50.8:44336/api/document/download?name=' + item.documentName, '_newtab');
 
 
+    }
+
+    
+
+
+    public AddDocumentSource: DocumentInfo = {
+        DocumentID: 0,
+        DocumentName: '',
+        PartnerInfoID: 0,
+        CompanyID: 0,
+        DocumentStatus: DocumentStatus.MATCHING,
+    }
+
+    public FileInfo: {
+        companyTitle?: string,
+        documentStatusTitle?: string,
+    } = {};
+
+    public NewFile: any = null;
+
+    /**
+     * CreateDocumentValueUpdate
+     */
+    public CreateDocumentValueUpdate(value: string, itemName: string) {
+        switch (itemName) {            
+            case 'documentFileBox':
+                this.NewFile = value[0];
+                break;
+
+            case 'documentCompanySB':
+                this.FileInfo.companyTitle = value;
+                break;
+
+            case 'documentStatusSB':
+                this.FileInfo.documentStatusTitle = value;
+                break;
+            
+            default:
+                break;
+        }
+    }
+
+    /**
+     * documentWork
+     */
+    public documentWork(elem: DocumentInfo, event: string) {
+        let companiesSelectOption: Array<{id: number, title: string}> = [];
+        let companies: any = this.companiesSource;
+        companiesSelectOption.push({
+            id: 0,
+            title: 'Выберите компанию...',
+        });
+        for (let i = 0; i < this.companiesSource.length; i++) {
+            companiesSelectOption.push({
+                id: i,
+                title: companies[i].companyName + ' - ' 
+                        + companies[i].contactPersonFullName + ' - '
+                        + companies[i].city.cityName,
+            });  
+        }
+        switch (event) {
+            case 'create':
+                    this.ModalCreateSource = {
+                        title: 'Добавление партнера',
+                        components: [
+                            {
+                                name: 'documentFileBox',
+                                title: 'Документ',
+                                type: FormType.FILEBOX, // type file
+                            },
+                            {
+                                name: 'documentCompanySB',
+                                title: 'Компания',
+                                selectOptions: companiesSelectOption,
+                                type: FormType.SELECTBOX,
+                            },
+                            {
+                                name: 'documentStatusSB',
+                                title: 'Статус документа',
+                                selectOptions: this.DocsStatuses,
+                                type: FormType.SELECTBOX,
+                            },
+                        ],
+                    }
+
+                    this.modalMyDocumentCreateState = true;
+                break;
+            case 'delete':
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * AddNewDocument
+     */
+    public async AddNewDocument(addMode: string) {
+        switch (addMode) {
+            case 'partner':
+                let docApi = new DocumentAPI();
+                let companies: any = this.companiesSource;
+                
+                let companyID: number = 0;
+                // нахождение компании по тайтлу
+                for (let i = 0; i < companies.length; i++) {
+                    if (this.FileInfo.companyTitle === companies[i].companyName + ' - ' 
+                            + companies[i].contactPersonFullName + ' - '
+                            + companies[i].city.cityName) {
+                        companyID = companies[i].companyID;
+                    }
+                }
+
+                console.log(companyID);
+                
+                let documentStatus: number = 0;
+                for (let i = 0; i < this.DocsStatuses.length; i++) {
+                    if (this.DocsStatuses[i].title === this.FileInfo.documentStatusTitle) {
+                        documentStatus = i;
+                    }
+                }
+                documentStatus--;
+                console.log(documentStatus);
+
+                this.AddDocumentSource.DocumentName = this.NewFile.name;
+                this.AddDocumentSource.CompanyID = companyID;
+                this.AddDocumentSource.PartnerInfoID = this.userPartnerInfo.partnerInfoID;
+                this.AddDocumentSource.DocumentStatus = documentStatus;
+                
+                docApi.AddNewDocument(this.NewFile);
+                docApi.AddNewDocumentInfo(this.AddDocumentSource);
+                
+                this.documentsSource = await docApi.GetPartnerDocs(this.userPartnerInfo.partnerInfoID);
+
+                this.modalMyDocumentCreateState = false;
+
+                break;
+            
+            case 'admin':
+
+                break;
+
+            default:
+                break;
+        }
     }
 
     /**
