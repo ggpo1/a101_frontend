@@ -732,10 +732,10 @@ export default class ContentBar extends Vue {
                     let _cities = await _cityAPI.GetCities();
                     let _cSO: { id: number, title: string }[] = [];
                     _cSO.push({ id: 0, title: 'Выберите город...' });
+                    
                     for (let index = 0; index < _cities.length; index++) {
-                        _cSO.push({ id: cities[index].cityID, title: cities[index].cityName });
+                        _cSO.push({ id: _cities[index].cityID, title: _cities[index].cityName });
                     }
-                    this.modalCompanyCreateState = true;
     
                     // выборка партнеров для селектора партнеров
                     // Компания - Имя - Должность - Город
