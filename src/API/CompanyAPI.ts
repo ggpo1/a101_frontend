@@ -1,4 +1,4 @@
-import Company from "../Models/DataBase/Company";
+import Company from '../Models/DataBase/Company';
 import CompanyInfo from '@/Models/DTO/CompanyInfo';
 import BaseUrl from '@/Data/BaseUrl';
 
@@ -6,16 +6,16 @@ export default class CompanyApi {
 
     // добавление информации о компании
     public async AddNewCompanyInfo(companyInfo: CompanyInfo): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/company', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(companyInfo)
+                body: JSON.stringify(companyInfo),
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });
@@ -23,16 +23,16 @@ export default class CompanyApi {
 
     // обновление данных о компании
     public async PatchCompanyInfo(companyInfo: CompanyInfo): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/company', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(companyInfo)
+                body: JSON.stringify(companyInfo),
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });
@@ -40,12 +40,12 @@ export default class CompanyApi {
 
     // получение списка компании партнера
     public async GetPartnerCompanies(userID: number): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/company/getpartnercompanies?userid=' + userID, {
                 method: 'GET',
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });
@@ -53,12 +53,12 @@ export default class CompanyApi {
 
     // удаление информации о компании
     public async RemoveCompany(companyID: number): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/company/' + companyID, {
                 method: 'DELETE',
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });
@@ -66,12 +66,12 @@ export default class CompanyApi {
 
     // получение яписка всех компаний
     public async GetCompanies(): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/company/', {
                 method: 'GET',
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });

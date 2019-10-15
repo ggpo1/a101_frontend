@@ -6,19 +6,19 @@ export default class AuthAPI {
      * Auth
      */
     public async Auth(Login: string, Password: string): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/auth', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ Login: Login, Password: Password })
+                body: JSON.stringify({ Login, Password }),
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });
     }
-    
+
 }

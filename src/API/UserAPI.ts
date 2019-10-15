@@ -5,28 +5,44 @@ export default class UserAPI {
     constructor() {}
 
     public async AddUserInfo(user: User): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/user/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userName: user.UserName, passwordHash: user.PasswordHash, role: user.Role })
+                body: JSON.stringify({ userName: user.UserName, passwordHash: user.PasswordHash, role: user.Role }),
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
+                resolve(body);
+            });
+        });
+    }
+
+    public async PatchUserInfo(user: User): Promise<any> {
+        return new Promise((resolve) => {
+            fetch(BaseUrl + 'api/user/', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userID: user.UserID, userName: user.UserName, passwordHash: user.PasswordHash, role: user.Role }),
+            })
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });
     }
 
     public async DeleteUser(userID: number): Promise<any> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             fetch(BaseUrl + 'api/user?userID=' + userID, {
-                method: 'DELETE',     
+                method: 'DELETE',
             })
-            .then(response => response.json())
-            .then(body => {
+            .then((response) => response.json())
+            .then((body) => {
                 resolve(body);
             });
         });

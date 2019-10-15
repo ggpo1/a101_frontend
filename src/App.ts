@@ -6,5 +6,5 @@ import router from '@/router';
 @Component({ components: { MenuBar } })
 export default class App extends Vue {
     public routeInfo: any;
-    
+
 }

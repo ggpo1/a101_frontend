@@ -5,6 +5,6 @@ export default class Company {
         public ContactPersonFullName: string,
         public ContactPersonPhoneNumber: string,
         public CityID: number,
-        public PartnerInfoID: number
+        public PartnerInfoID: number,
     ) {}
 }

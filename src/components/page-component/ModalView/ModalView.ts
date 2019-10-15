@@ -9,13 +9,13 @@ import FileBox from '@/components/form-component/FileBox';
 import DocumentInfo from '@/Models/DTO/DocumentInfo';
 
 @Component({ components: { LabelBox, InputBox, SelectBox, FileBox } })
-export default class ModalView extends Vue{
+export default class ModalView extends Vue {
     @Prop() public ModalMode!: ModalModeType;
     @Prop() public ModalInformSource!: IModalInformSource;
     @Prop() public ModalCreateSource!: IModalInformSource;
     @Prop() public pages!: any;
     @Prop() public companies!: Company[];
-    @Prop() public documents!: DocumentInfo[]; 
+    @Prop() public documents!: DocumentInfo[];
     @Prop() public modalPage2State!: string;
 
     public ModalPage: number = 0;

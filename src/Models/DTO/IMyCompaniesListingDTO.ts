@@ -1,18 +1,18 @@
 
 
 interface IMyCompaniesListingDTO {
-    companyID: number,
-    companyName: string,
-    contactPersonFullName: string,
-    contactPersonPhoneNumber: string,
-    contactPersonCompanyState: string,
-    status: number,
-    cityID: number,
+    companyID: number;
+    companyName: string;
+    contactPersonFullName: string;
+    contactPersonPhoneNumber: string;
+    contactPersonCompanyState: string;
+    status: number;
+    cityID: number;
     city: {
         cityID: number,
         cityName: string,
-    },
-    partnerInfoID: number,
+    };
+    partnerInfoID: number;
     partnerInfo: {
         partnerInfoID: number,
         companyName: string,
@@ -31,7 +31,7 @@ interface IMyCompaniesListingDTO {
             cityName: string,
         },
         cityID: number,
-    },
+    };
 }
 
 export default IMyCompaniesListingDTO;

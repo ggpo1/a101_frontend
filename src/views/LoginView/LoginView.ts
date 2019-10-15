@@ -15,9 +15,9 @@ export default class LoginView extends Vue {
     public LoginData: UserLoginDTO = {
         Login: '',
         Password: '',
-    }
+    };
 
-    public CardSource: Array<FormTypeClass> = [
+    public CardSource: FormTypeClass[] = [
         {
             name: 'loginLabel',
             type: FormType.LABELBOX,
@@ -42,30 +42,30 @@ export default class LoginView extends Vue {
         },
     ];
 
-    
-    
-    
+
+
+
     public mounted() {
         /*
         if (UserInfo.UserAuth === null || UserInfo.UserAuth === undefined) {
             router.push('login');
         }
         */
-       
+
        if (localStorage.user_auth_status === 1) {
            router.push('workspace');
        }
     }
-    
-    
+
+
     /**
      * LoginMethod
      */
     public async LoginMethod() {
-        let partner = new PartnerInfoApi();
-        let auth = new AuthAPI();
+        const partner = new PartnerInfoApi();
+        const auth = new AuthAPI();
         // partner.GetPartnerInfoByUserID();
-        let data = await auth.Auth(this.LoginData.Login, this.LoginData.Password);
+        const data = await auth.Auth(this.LoginData.Login, this.LoginData.Password);
         if (data.status === 1) {
             UserInfo.UserAuth = new UserLoginDTOResponse(
                 data.user,
@@ -77,7 +77,7 @@ export default class LoginView extends Vue {
             router.push('workspace');
         } else {
             alert('Неправильный логин или пароль!');
-        }        
+        }
     }
 
 

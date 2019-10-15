@@ -5,7 +5,7 @@ enum CompanyStatus {
     MATCHING_CONTRACT, // согласование договора
     NOT_PAID, // выставлен счет
     PAID, // счет оплачен
-    DONE // услуга выполнена
+    DONE, // услуга выполнена
 }
 
 export default CompanyStatus;

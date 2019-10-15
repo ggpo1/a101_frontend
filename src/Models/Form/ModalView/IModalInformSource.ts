@@ -1,23 +1,23 @@
 import FormType from '@/Models/FormType';
 
 interface IModalEditSourceComponent {
-    name: string, // for emit
-    title: string,
-    text?: any,
-    inputMethod?: string,
-    type: FormType,
+    name: string; // for emit
+    title: string;
+    text?: any;
+    inputMethod?: string;
+    type: FormType;
     selectOptions?: Array<{
         id: number,
         title: string,
-    }>,
-    hasHint?: boolean,
-    required?: boolean,
+    }>;
+    hasHint?: boolean;
+    required?: boolean;
 }
 
 interface IModalInformSource {
-    title: string,
-    description?: string,
-    components?: IModalEditSourceComponent[],
+    title: string;
+    description?: string;
+    components?: IModalEditSourceComponent[];
 }
 
 export default IModalInformSource;

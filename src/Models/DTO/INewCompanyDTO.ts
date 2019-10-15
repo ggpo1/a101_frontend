@@ -10,13 +10,13 @@ interface INewCompanyDTO {
         status: CompanyStatus,
         cityID: number,
         partnerInfoID: number,
-    }
+    };
     companyInfo: {
         cityName: string,
         partner: number,
         statusName: number,
         file?: any,
-    }
+    };
 }
 
 export default INewCompanyDTO;

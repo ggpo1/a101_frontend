@@ -4,5 +4,5 @@ import router from '@/router';
 
 @Component({ components: {  } })
 export default class MenuBar extends Vue {
-    
+
 }

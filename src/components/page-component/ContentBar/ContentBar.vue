@@ -44,6 +44,14 @@
         :ModalCreateSource="ModalCreateSource"
         v-if="modalPartnerCreateState"
       />
+      <ModalView
+        @modalClose="modalClose"
+        @addNew="UpdatePartner"
+        @updateValue="UpdatePartnerValueUpdate"
+        :ModalMode="'EDIT'"
+        :ModalCreateSource="ModalCreateSource"
+        v-if="modalPartnerEditState"
+      />
     </div>
     <div class="admin-wrapper admin-companies-wrapper" v-if="contentState === 'companies'">
       <h3>Компании</h3>

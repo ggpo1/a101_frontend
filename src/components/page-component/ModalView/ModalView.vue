@@ -88,7 +88,8 @@
     <section class="modal-content">
       <div class="inform-label" classs v-for="(elem, i) in ModalCreateSource.components" v-bind:key="i">
         <div style="display: flex; flex-direction: column; justify-content: center;">
-          <strong>{{ elem.title }}:</strong>
+          <strong v-if="elem.required">{{ elem.title }}: <span class="red-star">*</span></strong>
+          <strong v-else>{{ elem.title }}:</strong>
         </div>
         <div>
           <LabelBox v-if="elem.type === 2" :title="elem.text" />

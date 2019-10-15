@@ -28,7 +28,7 @@ interface ICompanyListingDTO {
             cityID: number,
         }
         status: CompanyStatus,
-    },
+    };
     partnerInfo: {
         partnerInfoID: number,
         companyName: string,
@@ -42,11 +42,11 @@ interface ICompanyListingDTO {
             cityName: string,
         },
         cityID: number,
-    },
+    };
     city: {
         cityID: number,
         cityName: string,
-    },
+    };
 }
 
 export default ICompanyListingDTO;

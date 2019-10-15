@@ -25,7 +25,7 @@ export default class WorkSpaceView extends Vue {
     public partnerInfo: any = {};
     public role: number = 0;
     public adminContentState: string = 'partners';
-    public partnerContentState: string= 'mycompanies';
+    public partnerContentState: string = 'mycompanies';
     public partnersSource: IGetPartnersDTO[] = [];
     public companiesSource: ICompanyListingDTO[] = [];
     public partnerCompaniesSource: IMyCompaniesListingDTO[] = [];
@@ -34,22 +34,22 @@ export default class WorkSpaceView extends Vue {
     public ModalInformSource: IModalInformSource = {
         title: 'Информация',
         description: 'Информация',
-    }
-    
+    };
+
 
     public PartnerSideBarSource: ISideBarSource[] = [
         {
            name: 'mycompanies',
            title: 'Мои компании',
-           href: ''
+           href: '',
         },
         {
             name: 'mydocuments',
             title: 'Мои документы',
-            href: ''
+            href: '',
         },
     ];
-    
+
     public AdminSideBarSource: ISideBarSource[] = [
         {
             name: 'partners',
@@ -76,25 +76,25 @@ export default class WorkSpaceView extends Vue {
             title: 'Города',
             href: '',
         },
-    ]
+    ];
 
     /**
      * partnerLinkAction
      */
     public async partnerLinkAction(link: string) {
-        
+
         if (link === 'mycompanies') {
             // загрузка контента
-            let companyAPI = new CompanyApi();
+            const companyAPI = new CompanyApi();
             // this.companiesSource = await companyAPI.GetPartnerCompanies();
             // console.log(this.partnerInfo);
             this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
         } else if (link === 'mydocuments') {
             // загрузка контента
-            let docAPI = new DocumentAPI();
+            const docAPI = new DocumentAPI();
             this.documentsSource = await docAPI.GetPartnerDocs(this.partnerInfo.partnerInfoID);
         }
-        
+
         this.partnerContentState = link;
     }
 
@@ -102,66 +102,66 @@ export default class WorkSpaceView extends Vue {
      * adminLinkAction
      */
     public async adminLinkAction(link: string) {
-        
+
         if (link === 'partners') {
             // загрузка контента
-            let partnerAPI = new PartnerInfoApi();
+            const partnerAPI = new PartnerInfoApi();
             this.partnersSource = await partnerAPI.GetPartners();
             // console.log(this.partnersSource);
         } else if (link === 'companies') {
             // загрузка контента
-            let companyAPI = new CompanyApi();
+            const companyAPI = new CompanyApi();
             this.companiesSource = await companyAPI.GetCompanies();
             console.log(this.companiesSource);
         } else if (link === 'documents') {
             // загрузка контента
-            let docAPI = new DocumentAPI();
+            const docAPI = new DocumentAPI();
             this.documentsSource = await docAPI.GetDocs();
             console.log(this.documentsSource);
         } else if (link === 'cities') {
             // загрузка контента
         }
-        
+
         this.adminContentState = link;
     }
-    
-    
-    
+
+
+
     public async mounted() {
         /*
         if (UserInfo.UserAuth === null || UserInfo.UserAuth === undefined) {
             router.push('login');
         }
         */
-       
+
        if (localStorage.user_auth_status === 0 || localStorage.user_auth_status === null || localStorage.user_auth_status === undefined) {
            router.push('login');
        } else {
-           let data = JSON.parse(localStorage.user);
+           const data = JSON.parse(localStorage.user);
            // console.log(data);
            this.user = new UserLoginDTOResponse(
                new User(
                    data.user.userID,
                    data.user.userName,
                    data.user.passwordHash,
-                   data.user.role
+                   data.user.role,
                 ),
-                data.status
+                data.status,
            );
-           
-            this.role = this.user.User.Role;
-            let partnerAPI = new PartnerInfoApi();
-            let companyAPI = new CompanyApi();
-            let docAPI = new DocumentAPI();
-            this.companiesSource = await companyAPI.GetCompanies();
-            this.partnersSource = await partnerAPI.GetPartners();
-            console.log(this.partnersSource);
-            
-            this.partnerInfo = await partnerAPI.GetPartnerInfoByUserID(data.user.userID);
-            this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
-            this.documentsSource = await docAPI.GetPartnerDocs(this.partnerInfo.partnerInfoID);
-            console.log(this.partnerCompaniesSource);
-            if (this.role === 1) {
+
+           this.role = this.user.User.Role;
+           const partnerAPI = new PartnerInfoApi();
+           const companyAPI = new CompanyApi();
+           const docAPI = new DocumentAPI();
+           this.companiesSource = await companyAPI.GetCompanies();
+           this.partnersSource = await partnerAPI.GetPartners();
+           console.log(this.partnersSource);
+
+           this.partnerInfo = await partnerAPI.GetPartnerInfoByUserID(data.user.userID);
+           this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
+           this.documentsSource = await docAPI.GetPartnerDocs(this.partnerInfo.partnerInfoID);
+           console.log(this.partnerCompaniesSource);
+           if (this.role === 1) {
                 this.documentsSource = await docAPI.GetDocs();
                 console.log(this.documentsSource);
             }

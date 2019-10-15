@@ -9,6 +9,6 @@ export default class FileBox extends Vue {
      */
     public changed() {
         // console.log($file);
-        
+
     }
 }

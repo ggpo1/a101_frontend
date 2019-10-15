@@ -9,8 +9,8 @@ import UserLoginDTO from '@/Models/DTO/UserLoginDTO';
 
 @Component({ components: { InputBox, ButtonBox, LabelBox } })
 export default class Card extends Vue {
-    @Prop() public CardSource!: Array<FormTypeClass>;
-    @Prop() public LoginData!: UserLoginDTO; 
+    @Prop() public CardSource!: FormTypeClass[];
+    @Prop() public LoginData!: UserLoginDTO;
     public inputValue: string = '';
     /**
      * helloEmit

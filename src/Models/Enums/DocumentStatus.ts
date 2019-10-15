@@ -3,7 +3,7 @@ enum DocumentStatus {
     SIGNED, // подписан
     NOT_SIGNED, // не подписан
     NOT_PAID, // не оплачен
-    PAID // оплачен
+    PAID, // оплачен
 }
 
 export default DocumentStatus;

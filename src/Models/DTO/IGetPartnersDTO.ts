@@ -4,7 +4,7 @@ interface IGetPartnersDTO {
         userName: string,
         passwordHash: string,
         role: number,
-    },
+    };
     partnerInfo: {
         partnerInfoID: number,
         companyName: string,
@@ -23,8 +23,8 @@ interface IGetPartnersDTO {
             cityName: string,
         },
         cityID: number,
-    },
-    city: string,
+    };
+    city: string;
 }
 
 export default IGetPartnersDTO;
