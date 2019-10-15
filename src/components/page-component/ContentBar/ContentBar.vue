@@ -91,7 +91,7 @@
       <ModalView
         @modalClose="modalClose"
         @addNew="UpdateCompany"
-        @updateValue="CreateCompanyValueUpdate"
+        @updateValue="UpdateCompanyValueUpdate"
         :ModalMode="'EDIT'"
         :ModalCreateSource="ModalCreateSource"
         v-if="modalCompanyEditState"
@@ -155,7 +155,6 @@
         :ModalInformSource="ModalInformSource"
         v-if="modalMyCompanyInfoState"
       />
-      
       <ModalView
         @modalClose="modalClose"
         @addNew="AddNewMyCompany"
@@ -163,6 +162,14 @@
         :ModalMode="'CREATE'"
         :ModalCreateSource="ModalCreateSource"
         v-if="modalMyCompanyCreateState"
+      />
+      <ModalView
+        @modalClose="modalClose"
+        @addNew="UpdateCompany"
+        @updateValue="UpdateCompanyValueUpdate"
+        :ModalMode="'EDIT'"
+        :ModalCreateSource="ModalCreateSource"
+        v-if="modalCompanyEditState"
       />
     </div>
     <div class="admin-wrapper admin-mydocuments-wrapper" v-if="contentState === 'mydocuments'">
@@ -181,8 +188,6 @@
         <div class="buttons-wrapper">
           <img @click="documentWork(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
           <img @click="documentWork(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
-          <!-- <div @click="partnerCompanyGridAction(elem, 'edit')" class="btn edit-button">изменить</div>
-          <div @click="partnerCompanyGridAction(elem, 'delete')" class="btn remove-button">удалить</div> -->
         </div>
       </div>
       <ModalView
@@ -202,6 +207,14 @@
         :ModalMode="'CREATE'"
         :ModalCreateSource="ModalCreateSource"
         v-if="modalMyDocumentCreateState"
+      />
+      <ModalView
+        @modalClose="modalClose"
+        @addNew="UpdateDocument"
+        @updateValue="UpdateDocumentValueUpdate"
+        :ModalMode="'EDIT'"
+        :ModalCreateSource="ModalCreateSource"
+        v-if="modalMyDocEditState"
       />
     </div>
   </div>

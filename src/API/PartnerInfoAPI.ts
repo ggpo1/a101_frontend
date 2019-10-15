@@ -1,11 +1,12 @@
 import PartnerInfo from "../Models/DataBase/PartnerInfo";
+import BaseUrl from '@/Data/BaseUrl';
 
 export default class PartnerInfoApi {
     constructor() {}
        
     public async GetPartnerInfoByUserID(userID: number): Promise<any> {
         return new Promise(resolve => {
-            fetch('http://192.168.50.8:44336/api/partnerinfo/GetPartnerInfoByUserID?userID=' + userID, {
+            fetch(BaseUrl + 'api/partnerinfo/GetPartnerInfoByUserID?userID=' + userID, {
                 method: 'GET',
             })
             .then(response => response.json())
@@ -17,7 +18,7 @@ export default class PartnerInfoApi {
 
     public async GetPartners(): Promise<any> {
         return new Promise(resolve => {
-            fetch('http://192.168.50.8:44336/api/partnerinfo/getpartners', {
+            fetch(BaseUrl + 'api/partnerinfo/getpartners', {
                 method: 'GET',
             })
             .then(response => response.json())
@@ -29,7 +30,7 @@ export default class PartnerInfoApi {
 
     public async AddPartnerInfo(partner: PartnerInfo): Promise<any> {
         return new Promise(resolve => {
-            fetch('http://192.168.50.8:44336/api/partnerinfo/', {
+            fetch(BaseUrl + 'api/partnerinfo/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -54,7 +55,7 @@ export default class PartnerInfoApi {
 
     public async DeletePartner(partnerID: number): Promise<any> {
         return new Promise(resolve => {
-            fetch('http://192.168.50.8:44336/api/partnerinfo?partnerInfoID=' + partnerID, {
+            fetch(BaseUrl + 'api/partnerinfo?partnerInfoID=' + partnerID, {
                 method: 'DELETE',        
             })
             .then(response => response.json())

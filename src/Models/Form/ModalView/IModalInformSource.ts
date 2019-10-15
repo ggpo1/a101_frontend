@@ -3,7 +3,7 @@ import FormType from '@/Models/FormType';
 interface IModalEditSourceComponent {
     name: string, // for emit
     title: string,
-    text?: string,
+    text?: any,
     inputMethod?: string,
     type: FormType,
     selectOptions?: Array<{
@@ -11,6 +11,7 @@ interface IModalEditSourceComponent {
         title: string,
     }>,
     hasHint?: boolean,
+    required?: boolean,
 }
 
 interface IModalInformSource {

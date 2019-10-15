@@ -1,11 +1,12 @@
 import User from '@/Models/DataBase/User';
+import BaseUrl from '@/Data/BaseUrl';
 
 export default class UserAPI {
     constructor() {}
 
     public async AddUserInfo(user: User): Promise<any> {
         return new Promise(resolve => {
-            fetch('http://192.168.50.8:44336/api/user/', {
+            fetch(BaseUrl + 'api/user/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -21,7 +22,7 @@ export default class UserAPI {
 
     public async DeleteUser(userID: number): Promise<any> {
         return new Promise(resolve => {
-            fetch('http://192.168.50.8:44336/api/user?userID=' + userID, {
+            fetch(BaseUrl + 'api/user?userID=' + userID, {
                 method: 'DELETE',     
             })
             .then(response => response.json())

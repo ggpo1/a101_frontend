@@ -1,3 +1,5 @@
+import BaseUrl from '@/Data/BaseUrl';
+
 export default class AuthAPI {
     public response: any;
     /**
@@ -5,7 +7,7 @@ export default class AuthAPI {
      */
     public async Auth(Login: string, Password: string): Promise<any> {
         return new Promise(resolve => {
-            fetch('http://192.168.50.8:44336/api/auth', {
+            fetch(BaseUrl + 'api/auth', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

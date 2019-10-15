@@ -1,6 +1,10 @@
 <template>
-    <select @change="$emit('updateValue', $event.target.value, name)" class="select-box">
-        <option v-for="(item, i) in selectOptions" v-bind:key="i">{{ item.title }}</option>
+    
+    <select v-if="value !== undefined" @change="$emit('updateValue', $event.target.value, name)" :value="value"  class="select-box">
+        <option v-for="(item, i) in selectOptions" :value="i" v-bind:key="i">{{ item.title }}</option>
+    </select>
+    <select v-else @change="$emit('updateValue', $event.target.value, name)" class="select-box">
+        <option v-for="(item, i) in selectOptions" :value="i" v-bind:key="i">{{ item.title }}</option>
     </select>
 </template>
 

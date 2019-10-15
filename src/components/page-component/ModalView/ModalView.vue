@@ -61,7 +61,8 @@
     <section class="modal-content">
       <div class="inform-label" classs v-for="(elem, i) in ModalCreateSource.components" v-bind:key="i">
         <div style="display: flex; flex-direction: column; justify-content: center;">
-          <strong>{{ elem.title }}:</strong>
+          <strong v-if="elem.required">{{ elem.title }}: <span class="red-star">*</span></strong>
+          <strong v-else>{{ elem.title }}:</strong>
         </div>
         <div>
           <LabelBox v-if="elem.type === 2" :title="elem.text" />
@@ -91,8 +92,8 @@
         </div>
         <div>
           <LabelBox v-if="elem.type === 2" :title="elem.text" />
-          <InputBox v-else-if="elem.type === 0" :inputName="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :title="elem.title" :id="'login_input_' + i" :inputMethod="elem.inputMethod" :placeHolder="elem.placeHolder" />
-          <SelectBox v-else-if="elem.type === 3" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :selectOptions="elem.selectOptions" />
+          <InputBox v-else-if="elem.type === 0" :value="elem.text" :inputName="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :title="elem.title" :id="'login_input_' + i" :inputMethod="elem.inputMethod" :placeHolder="elem.placeHolder" />
+          <SelectBox v-else-if="elem.type === 3" :value="elem.text" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :selectOptions="elem.selectOptions" />
           <FileBox v-else-if="elem.type === 4" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" />
         </div>
       </div>
@@ -269,5 +270,9 @@
 }
 
 
+.red-star {
+  color: red;
+  font-size: 80%;
+}
 
 </style>

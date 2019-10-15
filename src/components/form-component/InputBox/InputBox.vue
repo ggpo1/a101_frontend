@@ -1,5 +1,5 @@
 <template>
-  <input :type="inputMethod" @input="$emit('updateValue', $event.target.value, inputName)" class="input-box" name="" id="" :placeholder="placeHolder">
+  <input :type="inputMethod" :value="value" @input="$emit('updateValue', $event.target.value, inputName)" class="input-box" name="" id="" :placeholder="placeHolder">
 </template>
 
 <script lang="ts" src="./InputBox.ts" />

@@ -1,7 +1,7 @@
 import CompanyStatus from '../Enums/CompanyStatus';
 
 interface CompanyInfo {
-    CompanyID: number,
+    CompanyID?: number,
     CompanyName: string,
     ContactPersonFullName: string,
     ContactPersonPhoneNumber: string,

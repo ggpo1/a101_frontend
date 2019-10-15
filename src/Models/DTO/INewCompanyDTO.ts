@@ -2,6 +2,7 @@ import CompanyStatus from '../Enums/CompanyStatus';
 
 interface INewCompanyDTO {
     company: {
+        companyID?: number,
         companyName: string,
         contactPersonFullName: string,
         contactPersonPhoneNumber: string,
@@ -12,8 +13,8 @@ interface INewCompanyDTO {
     }
     companyInfo: {
         cityName: string,
-        partner: string,
-        statusName: string,
+        partner: number,
+        statusName: number,
         file?: any,
     }
 }
