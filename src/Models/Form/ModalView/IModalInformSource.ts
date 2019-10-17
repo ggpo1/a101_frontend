@@ -12,6 +12,8 @@ interface IModalEditSourceComponent {
     }>;
     hasHint?: boolean;
     required?: boolean;
+    error?: boolean;
+    errorText?: string;
 }
 
 interface IModalInformSource {

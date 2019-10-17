@@ -37,7 +37,7 @@
         <div class="partner-block" v-for="(item, i) in documents" v-bind:key="i" :id="'part_' + i">
           <div class="info-block">{{ item.documentName }}</div>
           <div class="info-block">{{ getDocStatus(item.documentStatus) }}</div>
-          <div class="info-block"><a :href="'http://192.168.50.8:44336/api/document/download?name=' + item.documentName" :download="item.documentName">скачать</a></div>
+          <div class="info-block"><a :href="'https://a100.technovik.ru:3005/api/document/download?name=' + item.documentName" :download="item.documentName">скачать</a></div>
         </div>
       </div>
       <div v-else-if="modalPage2State === 'else'">
@@ -64,11 +64,12 @@
           <strong v-if="elem.required">{{ elem.title }}: <span class="red-star">*</span></strong>
           <strong v-else>{{ elem.title }}:</strong>
         </div>
-        <div>
+        <div style="text-align: left">
           <LabelBox v-if="elem.type === 2" :title="elem.text" />
-          <InputBox v-else-if="elem.type === 0" :inputName="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :title="elem.title" :id="'login_input_' + i" :inputMethod="elem.inputMethod" :placeHolder="elem.placeHolder" />
-          <SelectBox v-else-if="elem.type === 3" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :selectOptions="elem.selectOptions" />
+          <InputBox :error="false" v-else-if="elem.type === 0" :inputName="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :title="elem.title" :id="'login_input_' + i" :inputMethod="elem.inputMethod" :placeHolder="elem.placeHolder" />
+          <SelectBox :error="false" v-else-if="elem.type === 3" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :selectOptions="elem.selectOptions" />
           <FileBox v-else-if="elem.type === 4" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" />
+          <label v-if="(elem.type === 0 || elem.type === 3 || elem.type === 4) && elem.error === true" for="" style="font-size: 55%; color: red;">{{ elem.errorText }}</label>
         </div>
       </div>
     </section>
@@ -91,11 +92,12 @@
           <strong v-if="elem.required">{{ elem.title }}: <span class="red-star">*</span></strong>
           <strong v-else>{{ elem.title }}:</strong>
         </div>
-        <div>
+        <div style="text-align: left;">
           <LabelBox v-if="elem.type === 2" :title="elem.text" />
           <InputBox v-else-if="elem.type === 0" :value="elem.text" :inputName="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :title="elem.title" :id="'login_input_' + i" :inputMethod="elem.inputMethod" :placeHolder="elem.placeHolder" />
           <SelectBox v-else-if="elem.type === 3" :value="elem.text" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" :selectOptions="elem.selectOptions" />
           <FileBox v-else-if="elem.type === 4" :name="elem.name" @updateValue="(i, n) => $emit('updateValue', i, n)" />
+          <label v-if="(elem.type === 0 || elem.type === 3) && elem.error === true" for="" style="font-size: 55%; color: red;">{{ elem.errorText }}</label>
         </div>
       </div>
     </section>
@@ -270,6 +272,13 @@
     color: white;
 }
 
+.error-msg-wrapper {
+  width: 100%;
+}
+
+.error-msg {
+  color: red;
+}
 
 .red-star {
   color: red;

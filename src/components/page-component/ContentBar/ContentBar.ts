@@ -22,8 +22,11 @@ import DocumentInfo from '@/Models/DTO/DocumentInfo';
 import CompanyInfo from '@/Models/DTO/CompanyInfo';
 import SearchBar from '@/components/page-component/SearchBar';
 import City from '@/Models/DataBase/City';
+import ErrorModal from '@/components/page-component/ErrorModal';
+import RusAlph from '@/Data/RusAlph';
+import FormErrors from '@/Models/Enums/FormErrors';
 
-@Component({ components: { ModalView, ButtonBox, SearchBar } })
+@Component({ components: { ModalView, ButtonBox, SearchBar, ErrorModal } })
 export default class ContentBar extends Vue {
     @Prop() public contentState!: string;
     @Prop() public partnersSource!: IGetPartnersDTO[];
@@ -48,6 +51,14 @@ export default class ContentBar extends Vue {
 
     public modalMyDocumentCreateState: boolean = false;
     public modalMyDocEditState: boolean = false;
+
+    public emptyField: boolean = false;
+    
+    public errorModalState: boolean = false;
+    public errorModalData: { title: string, text: string } = {
+        title: '',
+        text: '',
+    }
 
     public addPartnerData: INewPartnerDTO = {
         user: {
@@ -126,7 +137,11 @@ export default class ContentBar extends Vue {
         },
     ];
 
-    public ModalCreateSource!: IModalInformSource;
+    public ModalCreateSource: IModalInformSource = {
+        title: '',
+        description: '',
+        components: []
+    }
 
     public CompanyStatuses = [
         {
@@ -281,7 +296,7 @@ export default class ContentBar extends Vue {
             companyInfo.PartnerInfoID === 0 ||
             companyInfo.Status === -1
         ) {
-            alert('Заполните все поля!');
+            
         } else {
             const response = await companyAPI.PatchCompanyInfo(companyInfo);
             if (this.userPartnerInfo.user.role === 0) {
@@ -297,35 +312,31 @@ export default class ContentBar extends Vue {
     public async UpdateCompanyValueUpdate(value: string, itemName: string) {
         switch (itemName) {
             case 'companyNameEdit':
+                this.ModalCreateSource.components![0].error = value === '';
                 this.UpdateCompanyData.company.companyName = value;
                 break;
             case 'companyPersonFullNameEdit':
+                this.ModalCreateSource.components![1].error = value === '';
                 this.UpdateCompanyData.company.contactPersonFullName = value;
                 break;
             case 'companyPersonPhoneNumberEdit':
+                this.ModalCreateSource.components![2].error = value === '';
                 this.UpdateCompanyData.company.contactPersonPhoneNumber = value;
                 break;
             case 'companyPersonState':
+                this.ModalCreateSource.components![3].error = value === '';
                 this.UpdateCompanyData.company.contactPersonCompanyState = value;
                 break;
             case 'companyCity':
+                this.ModalCreateSource.components![4].error = parseInt(value) === 0;
                 if (parseInt(value) != 0) {
-                    console.log(value);
                     const cityAPI = new CityAPI();
                     const cities = await cityAPI.GetCities();
-                    console.log(cities);
                     this.UpdateCompanyData.company.cityID = cities[parseInt(value) - 1].cityID;
-                    console.log(this.UpdateCompanyData.company.cityID);
-                }
-                break;
-            case 'companyPartner':
-                if (parseInt(value) != 0) {
-                    const partnerAPI = new PartnerInfoApi();
-                    const partners = await partnerAPI.GetPartners();
-                    this.UpdateCompanyData.company.partnerInfoID = parseInt(partners[parseInt(value) - 1].partnerInfo.partnerInfoID);
                 }
                 break;
             case 'companyStatus':
+                this.ModalCreateSource.components![5].error = parseInt(value) === 0;
                 if (parseInt(value) != -1) {
                     this.UpdateCompanyData.company.status = this.CompanyStatuses[parseInt(value)].id;
                 }
@@ -362,7 +373,7 @@ export default class ContentBar extends Vue {
             companyInfo.PartnerInfoID === 0 ||
             companyInfo.Status === 0
         ) {
-            alert('Заполните все поля!');
+            
         } else {
             if (this.addCompanyData.companyInfo.file !== undefined && this.addCompanyData.companyInfo.file !== null) {
                 // добавляем информацию о компании и получаем обратно ее айди
@@ -415,7 +426,7 @@ export default class ContentBar extends Vue {
             companyInfo.CityID === 0 ||
             companyInfo.Status === 0
         ) {
-            alert('Заполните все поля!');
+            
         } else {
             // добавляем информацию о компании и получаем обратно ее айди
             const companyID = await companyAPI.AddNewCompanyInfo(companyInfo);
@@ -454,7 +465,7 @@ export default class ContentBar extends Vue {
             this.addPartnerData.partnerInfo.PhoneNumber === '' ||
             this.addPartnerData.partnerInfo.CityID === 0
         ) {
-            alert('Заполните все поля!');
+
         } else {
             // формирование юзера для отправки
             const newUser = new User(
@@ -488,31 +499,48 @@ export default class ContentBar extends Vue {
 
         switch (itemName) {
             case 'partnerLoginEdit':
+                this.ModalCreateSource.components![0].errorText = FormErrors.SINGLE_EMPTY;
+                if (value.length === 0) {
+                    this.ModalCreateSource.components![0].error = true;
+                } else {
+                    this.ModalCreateSource.components![0].error = false;
+                    let check = false;
+                    for (let i = 0; i < value.length; i++) {
+                        if (RusAlph.indexOf(value[i]) !== -1) {
+                            check = true;
+                        }
+                    }
+                    this.ModalCreateSource.components![0].errorText = check ? FormErrors.RUS_CHARS : FormErrors.SINGLE_EMPTY;
+                    this.ModalCreateSource.components![0].error = check;
+                }
                 this.addPartnerData.user.UserName = value;
                 break;
             case 'partnerPasswordEdit':
+                this.ModalCreateSource.components![1].error = value.length === 0;
                 this.addPartnerData.user.PasswordHash = value;
                 break;
             case 'partnerCompanyNameEdit':
+                this.ModalCreateSource.components![2].error = value.length === 0;
                 this.addPartnerData.partnerInfo.CompanyName = value;
                 break;
             case 'partnerFullNameEdit':
+                this.ModalCreateSource.components![3].error = value.length === 0;
                 this.addPartnerData.partnerInfo.FullName = value;
                 break;
             case 'partnerCompanyStateEdit':
+                this.ModalCreateSource.components![4].error = value.length === 0;
                 this.addPartnerData.partnerInfo.CompanyState = value;
                 break;
             case 'partnerPhoneEdit':
+                this.ModalCreateSource.components![5].error = value.length === 0;
                 this.addPartnerData.partnerInfo.PhoneNumber = value;
                 break;
             case 'partnerCityEdit':
+                this.ModalCreateSource.components![6].error = parseInt(value) === 0;
                 if (parseInt(value) != 0) {
-                    console.log(value);
                     const cityAPI = new CityAPI();
                     const cities = await cityAPI.GetCities();
-                    console.log(cities);
                     this.addPartnerData.partnerInfo.CityID = parseInt(cities[parseInt(value) - 1].cityID);
-                    console.log(this.addPartnerData.partnerInfo.CityID);
                 }
                 break;
 
@@ -523,43 +551,69 @@ export default class ContentBar extends Vue {
     public async CreateCompanyValueUpdate(value: string, itemName: string) {
         switch (itemName) {
             case 'companyNameEdit':
+                if (value.length === 0) {
+                    this.ModalCreateSource.components![0].error = true;
+                } else {
+                    this.ModalCreateSource.components![0].error = false;
+                }
                 this.addCompanyData.company.companyName = value;
                 break;
             case 'companyPersonFullNameEdit':
+                if (value.length === 0) {
+                    this.ModalCreateSource.components![1].error = true;
+                } else {
+                    this.ModalCreateSource.components![1].error = false;
+                }
                 this.addCompanyData.company.contactPersonFullName = value;
                 break;
             case 'companyPersonPhoneNumberEdit':
+                if (value.length === 0) {
+                    this.ModalCreateSource.components![2].error = true;
+                } else {
+                    this.ModalCreateSource.components![2].error = false;
+                }
                 this.addCompanyData.company.contactPersonPhoneNumber = value;
                 break;
             case 'companyPersonState':
+                if (value.length === 0) {
+                    this.ModalCreateSource.components![3].error = true;
+                } else {
+                    this.ModalCreateSource.components![3].error = false;
+                }
                 this.addCompanyData.company.contactPersonCompanyState = value;
                 break;
             case 'companyCity':
                 if (parseInt(value) != 0) {
-                    console.log(value);
+                    this.ModalCreateSource.components![4].error = false;
                     const cityAPI = new CityAPI();
                     const cities = await cityAPI.GetCities();
-                    console.log(cities);
                     this.addCompanyData.company.cityID = cities[parseInt(value) - 1].cityID;
-                    console.log(this.addCompanyData.company.cityID);
+                } else {
+                    this.ModalCreateSource.components![4].error = true;
                 }
                 break;
             case 'companyPartner':
                 this.addCompanyData.companyInfo.partner = parseInt(value);
                 if (parseInt(value) != 0) {
+                    this.ModalCreateSource.components![5].error = false;
                     const partnerAPI = new PartnerInfoApi();
                     const partners = await partnerAPI.GetPartners();
                     this.addCompanyData.company.partnerInfoID = parseInt(partners[parseInt(value) - 1].partnerInfo.partnerInfoID);
+                } else {
+                    this.ModalCreateSource.components![5].error = true;
                 }
                 break;
             case 'companyStatus':
+                if (parseInt(value) === 0) {
+                    this.ModalCreateSource.components![7].error = true;
+                } else {
+                    this.ModalCreateSource.components![7].error = false;
+                }
                 if (parseInt(value) != -1) {
                     this.addCompanyData.company.status = this.CompanyStatuses[parseInt(value)].id;
                 }
-
                 break;
             case 'companyDocument':
-                console.log(value[0]);
                 this.addCompanyData.companyInfo.file = value[0];
                 break;
             default:
@@ -589,30 +643,40 @@ export default class ContentBar extends Vue {
                             name: 'companyNameEdit', // for emit
                             title: 'Название компании',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyPersonFullNameEdit', // for emit
                             title: 'Контактное лицо',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyPersonPhoneNumberEdit', // for emit
                             title: 'Тел.',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyPersonState', // for emit
                             title: 'Должность',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyCity', // for emit
                             title: 'Город',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             selectOptions: cSO,
                             type: FormType.SELECTBOX,
                         },
@@ -625,6 +689,8 @@ export default class ContentBar extends Vue {
                             name: 'companyStatus', // for emit
                             title: 'Статус',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             selectOptions: this.CompanyStatuses,
                             type: FormType.SELECTBOX,
                         },
@@ -738,6 +804,8 @@ export default class ContentBar extends Vue {
                             name: 'companyNameEdit', // for emit
                             title: 'Название компании',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.companyName,
                             type: FormType.INPUTBOX,
                         },
@@ -745,6 +813,8 @@ export default class ContentBar extends Vue {
                             name: 'companyPersonFullNameEdit', // for emit
                             title: 'Контактное лицо',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.contactPersonFullName,
                             type: FormType.INPUTBOX,
                         },
@@ -752,6 +822,8 @@ export default class ContentBar extends Vue {
                             name: 'companyPersonPhoneNumberEdit', // for emit
                             title: 'Тел.',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.contactPersonPhoneNumber,
                             type: FormType.INPUTBOX,
                         },
@@ -759,6 +831,8 @@ export default class ContentBar extends Vue {
                             name: 'companyPersonState', // for emit
                             title: 'Должность',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.contactPersonCompanyState,
                             type: FormType.INPUTBOX,
                         },
@@ -766,6 +840,8 @@ export default class ContentBar extends Vue {
                             name: 'companyCity', // for emit
                             title: 'Город',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: new String(savedCity + 1),
                             selectOptions: _cSO,
                             type: FormType.SELECTBOX,
@@ -774,6 +850,8 @@ export default class ContentBar extends Vue {
                             name: 'companyStatus', // for emit
                             title: 'Статус',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: new String(elem.status + 1),
                             selectOptions: this.CompanyStatuses,
                             type: FormType.SELECTBOX,
@@ -801,18 +879,23 @@ export default class ContentBar extends Vue {
     public async CreatePartnerCompanyValueUpdate(value: string, itemName: string) {
         switch (itemName) {
             case 'companyNameEdit':
+                this.ModalCreateSource.components![0].error = value.length === 0;
                 this.addCompanyData.company.companyName = value;
                 break;
             case 'companyPersonFullNameEdit':
+                this.ModalCreateSource.components![1].error = value.length === 0;
                 this.addCompanyData.company.contactPersonFullName = value;
                 break;
             case 'companyPersonPhoneNumberEdit':
+                this.ModalCreateSource.components![2].error = value.length === 0;
                 this.addCompanyData.company.contactPersonPhoneNumber = value;
                 break;
             case 'companyPersonState':
+                this.ModalCreateSource.components![3].error = value.length === 0;
                 this.addCompanyData.company.contactPersonCompanyState = value;
                 break;
             case 'companyCity':
+                this.ModalCreateSource.components![4].error = parseInt(value) === 0;
                 if (parseInt(value) != 0) {
                     console.log(value);
                     const cityAPI = new CityAPI();
@@ -823,6 +906,7 @@ export default class ContentBar extends Vue {
                 }
                 break;
             case 'companyStatus':
+                this.ModalCreateSource.components![6].error = parseInt(value) === 0;
                 if (parseInt(value) != -1) {
                     this.addCompanyData.company.status = this.CompanyStatuses[parseInt(value)].id;
                 }
@@ -881,30 +965,40 @@ export default class ContentBar extends Vue {
                             name: 'companyNameEdit',
                             title: 'Название компании',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyPersonFullNameEdit',
                             title: 'Контактное лицо',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyPersonPhoneNumberEdit',
                             title: 'Тел.',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyPersonState',
                             title: 'Должность',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'companyCity',
                             title: 'Город',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             selectOptions: cSO,
                             type: FormType.SELECTBOX,
                         },
@@ -912,6 +1006,8 @@ export default class ContentBar extends Vue {
                             name: 'companyPartner',
                             title: 'Партнер',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             selectOptions: this.partnersOptions,
                             type: FormType.SELECTBOX,
                         },
@@ -924,6 +1020,8 @@ export default class ContentBar extends Vue {
                             name: 'companyStatus',
                             title: 'Статус',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             selectOptions: this.CompanyStatuses,
                             type: FormType.SELECTBOX,
                         },
@@ -1043,6 +1141,8 @@ export default class ContentBar extends Vue {
                             name: 'companyNameEdit', // for emit
                             title: 'Название компании',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.company.companyName,
                             type: FormType.INPUTBOX,
                         },
@@ -1050,6 +1150,8 @@ export default class ContentBar extends Vue {
                             name: 'companyPersonFullNameEdit', // for emit
                             title: 'Контактное лицо',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.company.contactPersonFullName,
                             type: FormType.INPUTBOX,
                         },
@@ -1057,6 +1159,8 @@ export default class ContentBar extends Vue {
                             name: 'companyPersonPhoneNumberEdit', // for emit
                             title: 'Тел.',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.company.contactPersonPhoneNumber,
                             type: FormType.INPUTBOX,
                         },
@@ -1064,6 +1168,8 @@ export default class ContentBar extends Vue {
                             name: 'companyPersonState', // for emit
                             title: 'Должность',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: elem.company.contactPersonCompanyState,
                             type: FormType.INPUTBOX,
                         },
@@ -1071,6 +1177,8 @@ export default class ContentBar extends Vue {
                             name: 'companyCity', // for emit
                             title: 'Город',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: new String(savedCity + 1),
                             selectOptions: _cSO,
                             type: FormType.SELECTBOX,
@@ -1079,6 +1187,8 @@ export default class ContentBar extends Vue {
                             name: 'companyStatus', // for emit
                             title: 'Статус',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: new String(elem.company.status + 1),
                             selectOptions: this.CompanyStatuses,
                             type: FormType.SELECTBOX,
@@ -1120,28 +1230,46 @@ export default class ContentBar extends Vue {
     public async UpdatePartnerValueUpdate(value: string, itemName: string) {
         switch (itemName) {
             case 'partnerLoginEdit':
+                this.ModalCreateSource.components![0].errorText = FormErrors.SINGLE_EMPTY;
+                if (value.length === 0) {
+                    this.ModalCreateSource.components![0].error = true;
+                } else {
+                    this.ModalCreateSource.components![0].error = false;
+                    let check = false;
+                    for (let i = 0; i < value.length; i++) {
+                        if (RusAlph.indexOf(value[i]) !== -1) {
+                            check = true;
+                        }
+                    }
+                    this.ModalCreateSource.components![0].errorText = check ? FormErrors.RUS_CHARS : FormErrors.SINGLE_EMPTY;
+                    this.ModalCreateSource.components![0].error = check;
+                }
                 this.addPartnerData.user.UserName = value;
                 break;
             case 'partnerCompanyNameEdit':
+                this.ModalCreateSource.components![1].error = value.length === 0;
                 this.addPartnerData.partnerInfo.CompanyName = value;
                 break;
             case 'partnerFullNameEdit':
+                this.ModalCreateSource.components![2].error = value.length === 0;
                 this.addPartnerData.partnerInfo.FullName = value;
                 break;
             case 'partnerCompanyStateEdit':
+                this.ModalCreateSource.components![3].error = value.length === 0;
                 this.addPartnerData.partnerInfo.CompanyState = value;
                 break;
             case 'partnerPhoneEdit':
+                this.ModalCreateSource.components![4].error = value.length === 0;
                 this.addPartnerData.partnerInfo.PhoneNumber = value;
                 break;
             case 'partnerCityEdit':
+                this.ModalCreateSource.components![5].error = parseInt(value) === 0;
                 if (parseInt(value) != 0) {
                     const cityAPI = new CityAPI();
                     const cities = await cityAPI.GetCities();
                     this.addPartnerData.partnerInfo.CityID = parseInt(cities[parseInt(value) - 1].cityID);
                 }
                 break;
-
         }
     }
 
@@ -1157,7 +1285,7 @@ export default class ContentBar extends Vue {
             this.addPartnerData.partnerInfo.CompanyState === '' ||
             this.addPartnerData.partnerInfo.PhoneNumber === ''
         ) {
-            alert('Заполните все поля!');
+            
         } else {
             let user = new User(this.addPartnerData.user.UserID, this.addPartnerData.user.UserName, '', UserRoles.PARTNER);
             let response = await userAPI.PatchUserInfo(user);
@@ -1191,7 +1319,7 @@ export default class ContentBar extends Vue {
                     components: [
                         {
                             name: 'partnerCompanyNameLabel', // for emit
-                            title: 'Логин',
+                            title: 'Логин', 
                             text: elem.user.userName,
                             type: FormType.LABELBOX,
                         },
@@ -1258,12 +1386,16 @@ export default class ContentBar extends Vue {
                         {
                             name: 'partnerLoginEdit', // for emit
                             title: 'Логин',
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             required: true,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'partnerPasswordEdit', // for emit
                             title: 'Пароль',
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             required: true,
                             inputMethod: 'password',
                             type: FormType.INPUTBOX,
@@ -1271,30 +1403,40 @@ export default class ContentBar extends Vue {
                         {
                             name: 'partnerCompanyNameEdit', // for emit
                             title: 'Название компании',
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             required: true,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'partnerFullNameEdit', // for emit
                             title: 'ФИО',
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             required: true,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'partnerCompanyStateEdit', // for emit
                             title: 'Должность',
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             required: true,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'partnerPhoneEdit', // for emit
                             title: 'Телефон',
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             required: true,
                             type: FormType.INPUTBOX,
                         },
                         {
                             name: 'partnerCityEdit', // for emit
                             title: 'Город',
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             required: true,
                             selectOptions: cSO,
                             type: FormType.SELECTBOX,
@@ -1331,6 +1473,8 @@ export default class ContentBar extends Vue {
                         {
                             name: 'partnerLoginEdit', // for emit
                             title: 'Логин',
+                            error: false,
+                            errorText: 'Заполните полe!',
                             required: true,
                             text: elem.user.userName,
                             type: FormType.INPUTBOX,
@@ -1338,6 +1482,8 @@ export default class ContentBar extends Vue {
                         {
                             name: 'partnerCompanyNameEdit', // for emit
                             title: 'Название компании',
+                            error: false,
+                            errorText: 'Заполните полe!',
                             required: true,
                             text: elem.partnerInfo.companyName,
                             type: FormType.INPUTBOX,
@@ -1345,6 +1491,8 @@ export default class ContentBar extends Vue {
                         {
                             name: 'partnerFullNameEdit', // for emit
                             title: 'ФИО',
+                            error: false,
+                            errorText: 'Заполните полe!',
                             required: true,
                             text: elem.partnerInfo.fullName,
                             type: FormType.INPUTBOX,
@@ -1352,6 +1500,8 @@ export default class ContentBar extends Vue {
                         {
                             name: 'partnerCompanyStateEdit', // for emit
                             title: 'Должность',
+                            error: false,
+                            errorText: 'Заполните полe!',
                             text: elem.partnerInfo.companyState,
                             required: true,
                             type: FormType.INPUTBOX,
@@ -1359,6 +1509,8 @@ export default class ContentBar extends Vue {
                         {
                             name: 'partnerPhoneEdit', // for emit
                             title: 'Телефон',
+                            error: false,
+                            errorText: 'Заполните полe!',
                             text: elem.partnerInfo.phoneNumber,
                             required: true,
                             type: FormType.INPUTBOX,
@@ -1367,6 +1519,8 @@ export default class ContentBar extends Vue {
                             name: 'partnerCityEdit', // for emit
                             title: 'Город',
                             required: true,
+                            error: false,
+                            errorText: 'Заполните полe!',
                             text: new String(savedCity + 1),
                             selectOptions: _cSO,
                             type: FormType.SELECTBOX,
@@ -1411,7 +1565,7 @@ export default class ContentBar extends Vue {
 
         // var link = document.createElement('a');
 
-        window.open('http://192.168.50.8:44336/api/document/download?name=' + item.documentName, '_newtab');
+        window.open('https://a100.technovik.ru:3005/api/document/download?name=' + item.documentName, '_newtab');
 
 
     }
@@ -1422,11 +1576,12 @@ export default class ContentBar extends Vue {
     public async CreateDocumentValueUpdate(value: string, itemName: string) {
         switch (itemName) {
             case 'documentFileBox':
+                this.ModalCreateSource.components![0].error = value.length === 0;
                 this.NewFile = value[0];
                 break;
 
             case 'documentCompanySB':
-                console.log(value);
+                this.ModalCreateSource.components![1].error = parseInt(value) === 0;
                 if (parseInt(value) !== 0) {
                     const companyAPI = new CompanyApi();
                     const companies = await companyAPI.GetPartnerCompanies(this.userPartnerInfo.partnerInfoID);
@@ -1435,10 +1590,9 @@ export default class ContentBar extends Vue {
                 break;
 
             case 'documentStatusSB':
-                console.log(value);
+                this.ModalCreateSource.components![2].error = parseInt(value) === 0;
                 const id = parseInt(value) - 1;
                 this.AddDocumentSource.DocumentStatus = id;
-                // console.log(this.AddDocumentSource.DocumentStatus);
 
                 break;
 
@@ -1474,12 +1628,16 @@ export default class ContentBar extends Vue {
                             name: 'documentFileBox',
                             title: 'Документ',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.FILE_EMPTY,
                             type: FormType.FILEBOX, // type file
                         },
                         {
                             name: 'documentCompanySB',
                             title: 'Компания',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             selectOptions: companiesSelectOption,
                             type: FormType.SELECTBOX,
                         },
@@ -1487,6 +1645,8 @@ export default class ContentBar extends Vue {
                             name: 'documentStatusSB',
                             title: 'Статус документа',
                             required: true,
+                            error: true,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             selectOptions: this.DocsStatuses,
                             type: FormType.SELECTBOX,
                         },
@@ -1500,7 +1660,6 @@ export default class ContentBar extends Vue {
                 break;
 
             case 'edit':
-                console.log(elem);
                 this.ModalCreateSource = {
                     title: 'Изменение документа',
                     components: [
@@ -1508,6 +1667,8 @@ export default class ContentBar extends Vue {
                             name: 'documentStatusSB',
                             title: 'Статус документа',
                             required: true,
+                            error: false,
+                            errorText: FormErrors.SINGLE_EMPTY,
                             text: new String(elem.documentStatus + 1),
                             selectOptions: this.DocsStatuses,
                             type: FormType.SELECTBOX,
@@ -1531,7 +1692,7 @@ export default class ContentBar extends Vue {
         const docApi = new DocumentAPI();
 
         if (this.AddDocumentSource.DocumentStatus === -1) {
-            alert('Заполните все поля!');
+            
         } else {
             const response = await docApi.PatchDocumentInfo(this.AddDocumentSource.DocumentID, this.AddDocumentSource.DocumentStatus);
 
@@ -1546,7 +1707,7 @@ export default class ContentBar extends Vue {
     public UpdateDocumentValueUpdate(value: string, itemName: string) {
         switch (itemName) {
             case 'documentStatusSB':
-                console.log(value);
+                this.ModalCreateSource.components![0].error = parseInt(value) === 0;
                 const id = parseInt(value) - 1;
                 this.AddDocumentSource.DocumentStatus = id;
                 break;
@@ -1563,7 +1724,7 @@ export default class ContentBar extends Vue {
         switch (addMode) {
             case 'partner':
                 if (this.NewFile === null || this.NewFile === undefined || this.AddDocumentSource.CompanyID === 0 || this.AddDocumentSource.DocumentStatus === 0) {
-                    alert('Заполните все поля!');
+                    
                 } else {
                     const docApi = new DocumentAPI();
                     const companies: any = this.companiesSource;

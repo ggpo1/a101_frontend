@@ -1,5 +1,3 @@
-interface IModalCreateSource {
-
-}
+interface IModalCreateSource {}
 
 export default IModalCreateSource;

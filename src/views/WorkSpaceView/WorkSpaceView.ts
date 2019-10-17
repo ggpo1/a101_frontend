@@ -1,4 +1,4 @@
-import { Component, Prop, Vue } from  'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { UserInfo } from '@/Data/UserInfo';
 import router from '@/router';
 import UserLoginDTOResponse from '@/Models/DTO/Response/UserLoginDTOResponse';
@@ -39,9 +39,9 @@ export default class WorkSpaceView extends Vue {
 
     public PartnerSideBarSource: ISideBarSource[] = [
         {
-           name: 'mycompanies',
-           title: 'Мои компании',
-           href: '',
+            name: 'mycompanies',
+            title: 'Мои компании',
+            href: '',
         },
         {
             name: 'mydocuments',
@@ -86,8 +86,6 @@ export default class WorkSpaceView extends Vue {
         if (link === 'mycompanies') {
             // загрузка контента
             const companyAPI = new CompanyApi();
-            // this.companiesSource = await companyAPI.GetPartnerCompanies();
-            // console.log(this.partnerInfo);
             this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
         } else if (link === 'mydocuments') {
             // загрузка контента
@@ -107,17 +105,14 @@ export default class WorkSpaceView extends Vue {
             // загрузка контента
             const partnerAPI = new PartnerInfoApi();
             this.partnersSource = await partnerAPI.GetPartners();
-            // console.log(this.partnersSource);
         } else if (link === 'companies') {
             // загрузка контента
             const companyAPI = new CompanyApi();
             this.companiesSource = await companyAPI.GetCompanies();
-            console.log(this.companiesSource);
         } else if (link === 'documents') {
             // загрузка контента
             const docAPI = new DocumentAPI();
             this.documentsSource = await docAPI.GetDocs();
-            console.log(this.documentsSource);
         } else if (link === 'cities') {
             // загрузка контента
         }
@@ -128,45 +123,38 @@ export default class WorkSpaceView extends Vue {
 
 
     public async mounted() {
-        /*
-        if (UserInfo.UserAuth === null || UserInfo.UserAuth === undefined) {
+        if (localStorage.user_auth_status === 0 ||
+            localStorage.user_auth_status === null ||
+            localStorage.user_auth_status === undefined
+        ) {
             router.push('login');
-        }
-        */
-
-       if (localStorage.user_auth_status === 0 || localStorage.user_auth_status === null || localStorage.user_auth_status === undefined) {
-           router.push('login');
-       } else {
-           const data = JSON.parse(localStorage.user);
-           // console.log(data);
-           this.user = new UserLoginDTOResponse(
-               new User(
-                   data.user.userID,
-                   data.user.userName,
-                   data.user.passwordHash,
-                   data.user.role,
+        } else {
+            const data = JSON.parse(localStorage.user);
+            this.user = new UserLoginDTOResponse(
+                new User(
+                    data.user.userID,
+                    data.user.userName,
+                    data.user.passwordHash,
+                    data.user.role,
                 ),
                 data.status,
-           );
+            );
 
-           this.role = this.user.User.Role;
-           const partnerAPI = new PartnerInfoApi();
-           const companyAPI = new CompanyApi();
-           const docAPI = new DocumentAPI();
-           this.companiesSource = await companyAPI.GetCompanies();
-           this.partnersSource = await partnerAPI.GetPartners();
-           console.log(this.partnersSource);
+            this.role = this.user.User.Role;
+            const partnerAPI = new PartnerInfoApi();
+            const companyAPI = new CompanyApi();
+            const docAPI = new DocumentAPI();
+            this.companiesSource = await companyAPI.GetCompanies();
+            this.partnersSource = await partnerAPI.GetPartners();
 
-           this.partnerInfo = await partnerAPI.GetPartnerInfoByUserID(data.user.userID);
-           this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
-           this.documentsSource = await docAPI.GetPartnerDocs(this.partnerInfo.partnerInfoID);
-           console.log(this.partnerCompaniesSource);
-           if (this.role === 1) {
+            this.partnerInfo = await partnerAPI.GetPartnerInfoByUserID(data.user.userID);
+            this.partnerCompaniesSource = await companyAPI.GetPartnerCompanies(this.partnerInfo.partnerInfoID);
+            this.documentsSource = await docAPI.GetPartnerDocs(this.partnerInfo.partnerInfoID);
+            if (this.role === 1) {
                 this.documentsSource = await docAPI.GetDocs();
-                console.log(this.documentsSource);
             }
 
-       }
+        }
 
     }
 }

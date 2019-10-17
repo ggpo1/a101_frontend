@@ -71,7 +71,6 @@ export default class LoginView extends Vue {
                 data.user,
                 data.status,
             );
-            console.log('logged in!');
             localStorage.setItem('user_auth_status', '1');
             localStorage.setItem('user', JSON.stringify(data));
             router.push('workspace');

@@ -52,6 +52,7 @@
         :ModalCreateSource="ModalCreateSource"
         v-if="modalPartnerEditState"
       />
+      <ErrorModal @modalClose="errorModalState = false" :errorData="errorModalData" v-if="errorModalState" />
     </div>
     <div class="admin-wrapper admin-companies-wrapper" v-if="contentState === 'companies'">
       <h3>Компании</h3>
@@ -116,7 +117,7 @@
       >
         <div class="info-block">{{ elem.documentName }}</div>
         <div class="info-block">{{ getDocStatus(elem.documentStatus) }}</div>
-        <div class="info-block"><a :href="'http://192.168.50.8:44336/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
+        <div class="info-block"><a :href="'https://a100.technovik.ru:3005/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
       </div>
     </div>
     <div class="admin-wrapper admin-admin-wrapper" v-if="contentState === 'admins'">
@@ -192,7 +193,7 @@
       >
         <div class="info-block">{{ elem.documentName }}</div>
         <div class="info-block">{{ getDocStatus(elem.documentStatus) }}</div>
-        <div class="info-block"><a :href="'http://192.168.50.8:44336/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
+        <div class="info-block"><a :href="'https://a100.technovik.ru:3005/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
         <div class="buttons-wrapper">
           <img @click="documentWork(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
           <img @click="documentWork(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
@@ -225,6 +226,7 @@
         v-if="modalMyDocEditState"
       />
     </div>
+    
   </div>
 </template>
 
