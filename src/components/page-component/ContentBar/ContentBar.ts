@@ -53,7 +53,7 @@ export default class ContentBar extends Vue {
     public modalMyDocEditState: boolean = false;
 
     public emptyField: boolean = false;
-    
+
     public errorModalState: boolean = false;
     public errorModalData: { title: string, text: string } = {
         title: '',
@@ -296,7 +296,7 @@ export default class ContentBar extends Vue {
             companyInfo.PartnerInfoID === 0 ||
             companyInfo.Status === -1
         ) {
-            
+
         } else {
             const response = await companyAPI.PatchCompanyInfo(companyInfo);
             if (this.userPartnerInfo.user.role === 0) {
@@ -373,7 +373,7 @@ export default class ContentBar extends Vue {
             companyInfo.PartnerInfoID === 0 ||
             companyInfo.Status === 0
         ) {
-            
+
         } else {
             if (this.addCompanyData.companyInfo.file !== undefined && this.addCompanyData.companyInfo.file !== null) {
                 // добавляем информацию о компании и получаем обратно ее айди
@@ -426,7 +426,7 @@ export default class ContentBar extends Vue {
             companyInfo.CityID === 0 ||
             companyInfo.Status === 0
         ) {
-            
+
         } else {
             // добавляем информацию о компании и получаем обратно ее айди
             const companyID = await companyAPI.AddNewCompanyInfo(companyInfo);
@@ -467,30 +467,38 @@ export default class ContentBar extends Vue {
         ) {
 
         } else {
-            // формирование юзера для отправки
-            const newUser = new User(
-                0,
-                this.addPartnerData.user.UserName,
-                this.addPartnerData.user.PasswordHash,
-                this.addPartnerData.user.Role,
-            );
-            // отправка юзера на бек
-            const user = await userAPI.AddUserInfo(newUser);
-            if (user === undefined || user === null) {
-                alert('Возникла ошибка!');
-            } else {
-                const newPartner = new PartnerInfo(
+            let check = false;
+            for (let i = 0; i < this.addPartnerData.user.UserName.length; i++) {
+                if (RusAlph.indexOf(this.addPartnerData.user.UserName[i]) !== -1) {
+                    check = true;
+                }
+            }
+            if (!check) {
+                // формирование юзера для отправки
+                const newUser = new User(
                     0,
-                    this.addPartnerData.partnerInfo.CompanyName,
-                    this.addPartnerData.partnerInfo.FullName,
-                    this.addPartnerData.partnerInfo.CompanyState,
-                    this.addPartnerData.partnerInfo.PhoneNumber,
-                    user.userID,
-                    this.addPartnerData.partnerInfo.CityID,
+                    this.addPartnerData.user.UserName,
+                    this.addPartnerData.user.PasswordHash,
+                    this.addPartnerData.user.Role,
                 );
-                await partnerAPI.AddPartnerInfo(newPartner);
-                this.partnersSource = await partnerAPI.GetPartners();
-                this.modalPartnerCreateState = false;
+                // отправка юзера на бек
+                const user = await userAPI.AddUserInfo(newUser);
+                if (user === undefined || user === null) {
+                    alert('Возникла ошибка!');
+                } else {
+                    const newPartner = new PartnerInfo(
+                        0,
+                        this.addPartnerData.partnerInfo.CompanyName,
+                        this.addPartnerData.partnerInfo.FullName,
+                        this.addPartnerData.partnerInfo.CompanyState,
+                        this.addPartnerData.partnerInfo.PhoneNumber,
+                        user.userID,
+                        this.addPartnerData.partnerInfo.CityID,
+                    );
+                    await partnerAPI.AddPartnerInfo(newPartner);
+                    this.partnersSource = await partnerAPI.GetPartners();
+                    this.modalPartnerCreateState = false;
+                }
             }
         }
     }
@@ -1285,26 +1293,34 @@ export default class ContentBar extends Vue {
             this.addPartnerData.partnerInfo.CompanyState === '' ||
             this.addPartnerData.partnerInfo.PhoneNumber === ''
         ) {
-            
-        } else {
-            let user = new User(this.addPartnerData.user.UserID, this.addPartnerData.user.UserName, '', UserRoles.PARTNER);
-            let response = await userAPI.PatchUserInfo(user);
-            console.log(response);
-            let partnerInfo = new PartnerInfo(this.addPartnerData.partnerInfo.PartnerInfoID,
-                this.addPartnerData.partnerInfo.CompanyName,
-                this.addPartnerData.partnerInfo.FullName,
-                this.addPartnerData.partnerInfo.CompanyState,
-                this.addPartnerData.partnerInfo.PhoneNumber,
-                undefined,
-                this.addPartnerData.partnerInfo.CityID
-            );
-            response = await partnerAPI.PatchPartnerInfo(partnerInfo);
-            console.log(response);
 
-            this.modalPartnerEditState = false;
-            this.partnersSource = await partnerAPI.GetPartners();
+        } else {
+            let check = false;
+            for (let i = 0; i < this.addPartnerData.user.UserName.length; i++) {
+                if (RusAlph.indexOf(this.addPartnerData.user.UserName[i]) !== -1) {
+                    check = true;
+                }
+            }
+            if (!check) {
+                let user = new User(this.addPartnerData.user.UserID, this.addPartnerData.user.UserName, '', UserRoles.PARTNER);
+                let response = await userAPI.PatchUserInfo(user);
+                console.log(response);
+                let partnerInfo = new PartnerInfo(this.addPartnerData.partnerInfo.PartnerInfoID,
+                    this.addPartnerData.partnerInfo.CompanyName,
+                    this.addPartnerData.partnerInfo.FullName,
+                    this.addPartnerData.partnerInfo.CompanyState,
+                    this.addPartnerData.partnerInfo.PhoneNumber,
+                    undefined,
+                    this.addPartnerData.partnerInfo.CityID
+                );
+                response = await partnerAPI.PatchPartnerInfo(partnerInfo);
+                console.log(response);
+
+                this.modalPartnerEditState = false;
+                this.partnersSource = await partnerAPI.GetPartners();
+            }
         }
-        
+
     }
 
     /**
@@ -1319,7 +1335,7 @@ export default class ContentBar extends Vue {
                     components: [
                         {
                             name: 'partnerCompanyNameLabel', // for emit
-                            title: 'Логин', 
+                            title: 'Логин',
                             text: elem.user.userName,
                             type: FormType.LABELBOX,
                         },
@@ -1692,7 +1708,7 @@ export default class ContentBar extends Vue {
         const docApi = new DocumentAPI();
 
         if (this.AddDocumentSource.DocumentStatus === -1) {
-            
+
         } else {
             const response = await docApi.PatchDocumentInfo(this.AddDocumentSource.DocumentID, this.AddDocumentSource.DocumentStatus);
 
@@ -1724,7 +1740,7 @@ export default class ContentBar extends Vue {
         switch (addMode) {
             case 'partner':
                 if (this.NewFile === null || this.NewFile === undefined || this.AddDocumentSource.CompanyID === 0 || this.AddDocumentSource.DocumentStatus === 0) {
-                    
+
                 } else {
                     const docApi = new DocumentAPI();
                     const companies: any = this.companiesSource;
