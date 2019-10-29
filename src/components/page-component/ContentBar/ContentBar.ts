@@ -25,14 +25,17 @@ import City from '@/Models/DataBase/City';
 import ErrorModal from '@/components/page-component/ErrorModal';
 import RusAlph from '@/Data/RusAlph';
 import FormErrors from '@/Models/Enums/FormErrors';
+import ModalSourceWorker from '@/Models/Form/ModalSourceWorker';
+import Enity from '@/Models/Enums/Entity';
 
 @Component({ components: { ModalView, ButtonBox, SearchBar, ErrorModal } })
 export default class ContentBar extends Vue {
     @Prop() public contentState!: string;
     @Prop() public partnersSource!: IGetPartnersDTO[];
-    @Prop() public companiesSource!: ICompanyListingDTO[];
+    @Prop() public companiesSource!: Company[];
     @Prop() public userPartnerInfo!: any;
     @Prop() public documentsSource!: DocumentInfo[];
+    public modalSourceWorker: ModalSourceWorker = new ModalSourceWorker();
 
     public modalPartnerCreateState: boolean = false;
     public modalPartnerInfoState: boolean = false;
@@ -48,6 +51,8 @@ export default class ContentBar extends Vue {
 
     public modalMyCompanyCreateState: boolean = false;
     public modalMyCompanyInfoState: boolean = false;
+
+    public documentCreateModalState: boolean = false;
 
     public modalMyDocumentCreateState: boolean = false;
     public modalMyDocEditState: boolean = false;
@@ -1086,7 +1091,7 @@ export default class ContentBar extends Vue {
                         {
                             name: 'companyCityNameLabel', // for emit
                             title: 'Статус', // Переход на статус
-                            text: this.getStatus(elem.company.status),
+                            text: elem.company.status.companyStatusName,
                             type: FormType.LABELBOX,
                         },
                     ],
@@ -1141,6 +1146,9 @@ export default class ContentBar extends Vue {
 
 
                 }
+
+                
+
                 // формирование структуры отображения модального окна
                 this.ModalCreateSource = {
                     title: 'Изменение компании',
@@ -1197,8 +1205,8 @@ export default class ContentBar extends Vue {
                             required: true,
                             error: false,
                             errorText: FormErrors.SINGLE_EMPTY,
-                            text: new String(elem.company.status + 1),
-                            selectOptions: this.CompanyStatuses,
+                            text: new String(elem.company.status.companyStatusID - 1),
+                            selectOptions: await this.modalSourceWorker.getOptions(UserRoles.ADMIN, Enity.COMPANY_STATUS),
                             type: FormType.SELECTBOX,
                         },
                     ],
@@ -1209,7 +1217,7 @@ export default class ContentBar extends Vue {
                 this.UpdateCompanyData.company.contactPersonFullName = elem.company.contactPersonFullName;
                 this.UpdateCompanyData.company.contactPersonPhoneNumber = elem.company.contactPersonPhoneNumber;
                 this.UpdateCompanyData.company.contactPersonCompanyState = elem.company.contactPersonCompanyState;
-                this.UpdateCompanyData.company.status = elem.company.status;
+                this.UpdateCompanyData.company.status = elem.company.status.companyStatusID;
                 this.UpdateCompanyData.company.cityID = elem.city.cityID;
                 this.UpdateCompanyData.company.partnerInfoID = elem.company.partnerInfoID;
 
@@ -1617,6 +1625,25 @@ export default class ContentBar extends Vue {
         }
     }
 
+    public adminDocWork(elem: any, event: string) {
+        switch (event) {
+            case 'create':
+                this.ModalCreateSource = this.modalSourceWorker.GetSource(UserRoles.ADMIN, Enity.DOCUMENT);
+                this.documentCreateModalState = true;
+                break;
+            
+            case 'edit':
+                
+
+                break;
+            case 'delete':
+
+                break;
+            default:
+                break;
+        }
+    }
+
     /**
      * documentWork
      */
@@ -1708,7 +1735,7 @@ export default class ContentBar extends Vue {
         const docApi = new DocumentAPI();
 
         if (this.AddDocumentSource.DocumentStatus === -1) {
-
+            // 
         } else {
             const response = await docApi.PatchDocumentInfo(this.AddDocumentSource.DocumentID, this.AddDocumentSource.DocumentStatus);
 

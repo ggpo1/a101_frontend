@@ -27,7 +27,11 @@ interface ICompanyListingDTO {
             },
             cityID: number,
         }
-        status: CompanyStatus,
+        status: {
+            companyStatusID: number,
+            companyStatusName: string,
+            companyStatusColor: string,
+        },
     };
     partnerInfo: {
         partnerInfoID: number,

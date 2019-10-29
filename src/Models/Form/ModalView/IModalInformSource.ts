@@ -7,9 +7,9 @@ interface IModalEditSourceComponent {
     inputMethod?: string;
     type: FormType;
     selectOptions?: Array<{
-        id: number,
-        title: string,
-    }>;
+        id: number;
+        title: string;
+    }> | (() => Array<{ id: number, title: string }>);
     hasHint?: boolean;
     required?: boolean;
     error?: boolean;

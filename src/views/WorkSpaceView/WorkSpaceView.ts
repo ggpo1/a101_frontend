@@ -18,6 +18,9 @@ import ICompanyListingDTO from '@/Models/DTO/ICompanyListingDTO';
 import IMyCompaniesListingDTO from '@/Models/DTO/IMyCompaniesListingDTO';
 import DocumentInfo from '@/Models/DTO/DocumentInfo';
 import DocumentAPI from '@/API/DocumentAPI';
+import Company from '@/Models/DataBase/Company';
+import AmoAPI from '@/API/AMO/AmoAPI';
+import StatusAmoAPI from '@/API/AMO/StatusAmoAPI';
 
 @Component({ components: { SideBar, ContentBar, ModalView } })
 export default class WorkSpaceView extends Vue {
@@ -27,7 +30,7 @@ export default class WorkSpaceView extends Vue {
     public adminContentState: string = 'partners';
     public partnerContentState: string = 'mycompanies';
     public partnersSource: IGetPartnersDTO[] = [];
-    public companiesSource: ICompanyListingDTO[] = [];
+    public companiesSource: Company[] = [];
     public partnerCompaniesSource: IMyCompaniesListingDTO[] = [];
     public documentsSource: DocumentInfo[] = [];
     public modalState: boolean = true;
@@ -129,6 +132,21 @@ export default class WorkSpaceView extends Vue {
         ) {
             router.push('login');
         } else {
+            // объекты для работы с api
+            const statusAmoAPI = new StatusAmoAPI();
+            const partnerAPI = new PartnerInfoApi();
+            const companyAPI = new CompanyApi();
+            const docAPI = new DocumentAPI();
+
+            // AMO MIDDLEWARE check____________
+            let resp = await statusAmoAPI.UpdateStatuses();
+            console.log("STATUSES UPDATE: " + resp.updated);
+            
+            // ________________________________
+
+            // загрузка статусов компаний
+            this.$store.commit('SET_COMPANY_STATUSES', await companyAPI.GetStatuses());
+
             const data = JSON.parse(localStorage.user);
             this.user = new UserLoginDTOResponse(
                 new User(
@@ -141,9 +159,7 @@ export default class WorkSpaceView extends Vue {
             );
 
             this.role = this.user.User.Role;
-            const partnerAPI = new PartnerInfoApi();
-            const companyAPI = new CompanyApi();
-            const docAPI = new DocumentAPI();
+            
             this.companiesSource = await companyAPI.GetCompanies();
             this.partnersSource = await partnerAPI.GetPartners();
 

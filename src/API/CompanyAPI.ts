@@ -1,6 +1,7 @@
 import Company from '../Models/DataBase/Company';
 import CompanyInfo from '@/Models/DTO/CompanyInfo';
 import BaseUrl from '@/Data/BaseUrl';
+import CompanyStatus from '@/Models/DataBase/CompanyStatus';
 
 export default class CompanyApi {
 
@@ -64,10 +65,23 @@ export default class CompanyApi {
         });
     }
 
-    // получение яписка всех компаний
-    public async GetCompanies(): Promise<any> {
+    // получение списка всех компаний
+    public async GetCompanies(): Promise<Array<Company>> {
         return new Promise((resolve) => {
             fetch(BaseUrl + 'api/company/', {
+                method: 'GET',
+            })
+            .then((response) => response.json())
+            .then((body) => {
+                resolve(body);
+            });
+        });
+    }
+
+    // получение списка всех стутсов для компаний(сделок)
+    public async GetStatuses(): Promise<Array<CompanyStatus>> {
+        return new Promise((resolve) => {
+            fetch(BaseUrl + 'api/company/status', {
                 method: 'GET',
             })
             .then((response) => response.json())

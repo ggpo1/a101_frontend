@@ -4,28 +4,35 @@
       <h3>Партнеры</h3>
       <SearchBar />
       <button @click="partnerBlockClick(null, 'create')" class="button-box">добавить</button>
-      <div
-        v-for="(elem, i) in partnersSource"
-        v-bind:key="i"
-        :id="'part_' + i"
-      >
+      <div v-for="(elem, i) in partnersSource" v-bind:key="i" :id="'part_' + i">
         <div class="partner-block" v-if="elem.user.role === 0">
           <div class="info-block">
-            <a @click="partnerBlockClick(elem, 'select')" href="#">{{ elem.partnerInfo.companyName }}</a>
+            <a
+              @click="partnerBlockClick(elem, 'select')"
+              href="#"
+            >{{ elem.partnerInfo.companyName }}</a>
           </div>
           <div class="info-block">{{ elem.partnerInfo.fullName }}</div>
           <div class="info-block">{{ elem.partnerInfo.companyState }}</div>
           <div class="info-block">{{ elem.partnerInfo.phoneNumber }}</div>
           <div class="info-block">{{ elem.city }}</div>
           <div class="buttons-wrapper">
-            <img @click="partnerBlockClick(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
-            <img @click="partnerBlockClick(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+            <img
+              @click="partnerBlockClick(elem, 'edit')"
+              class="button-icon"
+              src="../../../assets/pencil.png"
+              alt
+            />
+            <img
+              @click="partnerBlockClick(elem, 'delete')"
+              class="button-icon"
+              src="../../../assets/x-mark-32.png"
+              alt
+            />
             <!-- <div  class="btn remove-button">удалить</div> -->
             <!-- <div class="btn edit-button">изменить</div>  -->
-            
           </div>
         </div>
-        
       </div>
       <ModalView
         @modalClose="modalClose"
@@ -52,7 +59,11 @@
         :ModalCreateSource="ModalCreateSource"
         v-if="modalPartnerEditState"
       />
-      <ErrorModal @modalClose="errorModalState = false" :errorData="errorModalData" v-if="errorModalState" />
+      <ErrorModal
+        @modalClose="errorModalState = false"
+        :errorData="errorModalData"
+        v-if="errorModalState"
+      />
     </div>
     <div class="admin-wrapper admin-companies-wrapper" v-if="contentState === 'companies'">
       <h3>Компании</h3>
@@ -71,12 +82,22 @@
         <div class="info-block">{{ elem.company.contactPersonCompanyState }}</div>
         <div class="info-block">{{ elem.company.contactPersonPhoneNumber }}</div>
         <div class="info-block">{{ elem.city.cityName }}</div>
-        <div class="info-block">{{ getStatus(elem.company.status) }}</div>
+        <div class="info-block" style="font-weight: bold;">{{ elem.company.status.companyStatusName }}</div>
         <div class="buttons-wrapper">
-          <img @click="companyBlockClick(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
-          <img @click="companyBlockClick(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+          <img
+            @click="companyBlockClick(elem, 'edit')"
+            class="button-icon"
+            src="../../../assets/pencil.png"
+            alt
+          />
+          <img
+            @click="companyBlockClick(elem, 'delete')"
+            class="button-icon"
+            src="../../../assets/x-mark-32.png"
+            alt
+          />
           <!-- <div @click="companyBlockClick(elem, 'edit')" class="btn edit-button">изменить</div>
-          <div @click="companyBlockClick(elem, 'delete')" class="btn remove-button">удалить</div> --> 
+          <div @click="companyBlockClick(elem, 'delete')" class="btn remove-button">удалить</div>-->
         </div>
       </div>
       <ModalView
@@ -109,6 +130,7 @@
     <div class="admin-wrapper admin-documents-wrapper" v-if="contentState === 'documents'">
       <h3>Документы</h3>
       <SearchBar />
+      <button @click="adminDocWork(null, 'create')" class="button-box">добавить</button>
       <div
         class="partner-block"
         v-for="(elem, i) in documentsSource"
@@ -117,8 +139,35 @@
       >
         <div class="info-block">{{ elem.documentName }}</div>
         <div class="info-block">{{ getDocStatus(elem.documentStatus) }}</div>
-        <div class="info-block"><a :href="'https://a100.technovik.ru:3005/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
+        <div class="info-block">
+          <a
+            :href="'https://a100.technovik.ru:3005/api/document/download?name=' + elem.documentName"
+            :download="elem.documentName"
+          >скачать</a>
+        </div>
+        <div class="buttons-wrapper">
+          <img
+            @click="adminDocWork(elem, 'edit')"
+            class="button-icon"
+            src="../../../assets/pencil.png"
+            alt
+          />
+          <img
+            @click="adminDocWork(elem, 'delete')"
+            class="button-icon"
+            src="../../../assets/x-mark-32.png"
+            alt
+          />
+        </div>
       </div>
+      <ModalView
+        @modalClose="modalClose"
+        @addNew="AddNewDocument('admin')"
+        @updateValue="CreateCompanyValueUpdate"
+        :ModalMode="'CREATE'"
+        :ModalCreateSource="ModalCreateSource"
+        v-if="documentCreateModalState"
+      />
     </div>
     <div class="admin-wrapper admin-admin-wrapper" v-if="contentState === 'admins'">
       <h3>Администраторы</h3>
@@ -148,10 +197,20 @@
         <div class="info-block">{{ elem.city.cityName }}</div>
         <div class="info-block">{{ getStatus(elem.status) }}</div>
         <div class="buttons-wrapper">
-          <img @click="partnerCompanyGridAction(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
-          <img @click="partnerCompanyGridAction(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+          <img
+            @click="partnerCompanyGridAction(elem, 'edit')"
+            class="button-icon"
+            src="../../../assets/pencil.png"
+            alt
+          />
+          <img
+            @click="partnerCompanyGridAction(elem, 'delete')"
+            class="button-icon"
+            src="../../../assets/x-mark-32.png"
+            alt
+          />
           <!-- <div @click="partnerCompanyGridAction(elem, 'edit')" class="btn edit-button">изменить</div>
-          <div @click="partnerCompanyGridAction(elem, 'delete')" class="btn remove-button">удалить</div> -->
+          <div @click="partnerCompanyGridAction(elem, 'delete')" class="btn remove-button">удалить</div>-->
         </div>
       </div>
       <ModalView
@@ -193,10 +252,25 @@
       >
         <div class="info-block">{{ elem.documentName }}</div>
         <div class="info-block">{{ getDocStatus(elem.documentStatus) }}</div>
-        <div class="info-block"><a :href="'https://a100.technovik.ru:3005/api/document/download?name=' + elem.documentName" :download="elem.documentName">скачать</a></div>
+        <div class="info-block">
+          <a
+            :href="'https://a100.technovik.ru:3005/api/document/download?name=' + elem.documentName"
+            :download="elem.documentName"
+          >скачать</a>
+        </div>
         <div class="buttons-wrapper">
-          <img @click="documentWork(elem, 'edit')" class="button-icon" src="../../../assets/pencil.png" alt="">
-          <img @click="documentWork(elem, 'delete')" class="button-icon" src="../../../assets/x-mark-32.png" alt="">
+          <img
+            @click="documentWork(elem, 'edit')"
+            class="button-icon"
+            src="../../../assets/pencil.png"
+            alt
+          />
+          <img
+            @click="documentWork(elem, 'delete')"
+            class="button-icon"
+            src="../../../assets/x-mark-32.png"
+            alt
+          />
         </div>
       </div>
       <ModalView
@@ -226,7 +300,6 @@
         v-if="modalMyDocEditState"
       />
     </div>
-    
   </div>
 </template>
 
