@@ -52,6 +52,19 @@ export default class CompanyApi {
         });
     }
 
+    // получение по id
+    public async GetByID(companyID: number): Promise<any> {
+        return new Promise((resolve) => {
+            fetch(BaseUrl + 'api/company/' + companyID, {
+                method: 'GET',
+            })
+            .then((response) => response.json())
+            .then((body) => {
+                resolve(body);
+            });
+        });
+    }
+    
     // удаление информации о компании
     public async RemoveCompany(companyID: number): Promise<any> {
         return new Promise((resolve) => {

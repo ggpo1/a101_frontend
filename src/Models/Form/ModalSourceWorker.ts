@@ -45,6 +45,10 @@ export default class ModalSourceWorker {
                         let statuses = await this.companyAPI.GetStatuses();
                         console.log(statuses)
                         let statusOptions: Array<{ id: number, title: string }> = [];
+                        statusOptions.push({
+                            id: -1,
+                            title: 'Выберите статус...',
+                        });
 
                         for (let i = 0; i < statuses.length; i++) {
                             statusOptions.push({ id: statuses[i].companyStatusID, title: statuses[i].companyStatusName });
@@ -54,6 +58,30 @@ export default class ModalSourceWorker {
                     default:
                         break;
                 }
+
+            case UserRoles.PARTNER:
+                switch (entity) {
+                    case Enity.COMPANY:
+                        // other
+                    case Enity.COMPANY_STATUS:
+                        let statuses = await this.companyAPI.GetStatuses();
+                        console.log(statuses)
+                        let statusOptions: Array<{ id: number, title: string }> = [];
+                        statusOptions.push({
+                            id: -1,
+                            title: 'Выберите статус...',
+                        });
+
+                        for (let i = 0; i < statuses.length; i++) {
+                            statusOptions.push({ id: statuses[i].companyStatusID, title: statuses[i].companyStatusName });
+                        }
+                        console.log(statusOptions);
+                        return statusOptions;
+                    default:
+                        break;
+                }
+
+
             default:
                 break;
         }

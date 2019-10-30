@@ -82,7 +82,7 @@
         <div class="info-block">{{ elem.company.contactPersonCompanyState }}</div>
         <div class="info-block">{{ elem.company.contactPersonPhoneNumber }}</div>
         <div class="info-block">{{ elem.city.cityName }}</div>
-        <div class="info-block" style="font-weight: bold;">{{ elem.company.status.companyStatusName }}</div>
+        
         <div class="buttons-wrapper">
           <img
             @click="companyBlockClick(elem, 'edit')"
@@ -126,6 +126,65 @@
         :ModalCreateSource="ModalCreateSource"
         v-if="modalCompanyEditState"
       />
+    </div>
+    <div class="admin-wrapper admin-companies-wrapper" v-if="contentState === 'deals'">
+      <h3>Сделки</h3>
+      <SearchBar />
+      <button @click="dealBlockClick(null, 'create')" class="button-box">добавить</button>
+      <div
+        class="partner-block"
+        v-for="(elem, i) in this.$store.getters.ALL_DEALS"
+        v-bind:key="i"
+        :id="'part_' + i"
+      >
+        <div class="info-block">
+          <a @click="dealBlockClick(elem, 'select')" href="#">{{ elem.dealName }}</a>
+        </div>
+        <div class="info-block">{{ elem.company.companyName }}</div>
+        <div class="info-block" style="font-weight: bold;">{{ elem.companyStatus.companyStatusName }}</div>
+        
+        <div class="buttons-wrapper">
+          <img
+            @click="dealBlockClick(elem, 'edit')"
+            class="button-icon"
+            src="../../../assets/pencil.png"
+            alt
+          />
+          <img
+            @click="dealBlockClick(elem, 'delete')"
+            class="button-icon"
+            src="../../../assets/x-mark-32.png"
+            alt
+          />
+          <!-- <div @click="companyBlockClick(elem, 'edit')" class="btn edit-button">изменить</div>
+          <div @click="companyBlockClick(elem, 'delete')" class="btn remove-button">удалить</div>-->
+        </div>
+      </div>
+      <ModalView
+        @modalClose="modalClose"
+        @downloadAction="downloadAction"
+        :ModalMode="'INFORM'" 
+        :ModalInformSource="ModalInformSource"
+        v-if="modalInfoDealState"
+      />
+      <!-- 
+        <ModalView
+          @modalClose="modalClose"
+          @addNew="AddNewCompany"
+          @updateValue="CreateCompanyValueUpdate"
+          :ModalMode="'CREATE'"
+          :ModalCreateSource="ModalCreateSource"
+          v-if="modalCompanyCreateState"
+        />
+        <ModalView
+          @modalClose="modalClose"
+          @addNew="UpdateCompany"
+          @updateValue="UpdateCompanyValueUpdate"
+          :ModalMode="'EDIT'"
+          :ModalCreateSource="ModalCreateSource"
+          v-if="modalCompanyEditState"
+        />
+      -->
     </div>
     <div class="admin-wrapper admin-documents-wrapper" v-if="contentState === 'documents'">
       <h3>Документы</h3>
@@ -195,7 +254,7 @@
         <div class="info-block">{{ elem.contactPersonCompanyState }}</div>
         <div class="info-block">{{ elem.contactPersonPhoneNumber }}</div>
         <div class="info-block">{{ elem.city.cityName }}</div>
-        <div class="info-block">{{ getStatus(elem.status) }}</div>
+        <div class="info-block" style="font-weight: bold;">{{ elem.status.companyStatusName }}</div>
         <div class="buttons-wrapper">
           <img
             @click="partnerCompanyGridAction(elem, 'edit')"

@@ -6,7 +6,8 @@ interface CompanyInfo {
     ContactPersonFullName: string;
     ContactPersonPhoneNumber: string;
     ContactPersonCompanyState: string;
-    Status: CompanyStatus;
+    Status?: CompanyStatus;
+    CompanyStatusID?: number;
     CityID: number;
     PartnerInfoID: number;
 }

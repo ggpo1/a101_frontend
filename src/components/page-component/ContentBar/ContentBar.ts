@@ -57,6 +57,8 @@ export default class ContentBar extends Vue {
     public modalMyDocumentCreateState: boolean = false;
     public modalMyDocEditState: boolean = false;
 
+    public modalInfoDealState: boolean = false;
+
     public emptyField: boolean = false;
 
     public errorModalState: boolean = false;
@@ -279,6 +281,7 @@ export default class ContentBar extends Vue {
         this.modalCompanyEditState = false;
         this.modalMyDocEditState = false;
         this.modalPartnerEditState = false;
+        this.modalInfoDealState = false;
     }
 
     public async UpdateCompany() {
@@ -289,7 +292,7 @@ export default class ContentBar extends Vue {
             ContactPersonFullName: this.UpdateCompanyData.company.contactPersonFullName,
             ContactPersonPhoneNumber: this.UpdateCompanyData.company.contactPersonPhoneNumber,
             ContactPersonCompanyState: this.UpdateCompanyData.company.contactPersonCompanyState,
-            Status: this.UpdateCompanyData.company.status,
+            CompanyStatusID: this.UpdateCompanyData.company.status,
             CityID: this.UpdateCompanyData.company.cityID,
             PartnerInfoID: this.UpdateCompanyData.company.partnerInfoID,
         };
@@ -343,7 +346,8 @@ export default class ContentBar extends Vue {
             case 'companyStatus':
                 this.ModalCreateSource.components![5].error = parseInt(value) === 0;
                 if (parseInt(value) != -1) {
-                    this.UpdateCompanyData.company.status = this.CompanyStatuses[parseInt(value)].id;
+                    let statuses = await this.modalSourceWorker.getOptions(UserRoles.ADMIN, Enity.COMPANY_STATUS);
+                    this.UpdateCompanyData.company.status = statuses![parseInt(value)].id;
                 }
 
                 break;
@@ -365,7 +369,6 @@ export default class ContentBar extends Vue {
             ContactPersonFullName: this.addCompanyData.company.contactPersonFullName,
             ContactPersonPhoneNumber: this.addCompanyData.company.contactPersonPhoneNumber,
             ContactPersonCompanyState: this.addCompanyData.company.contactPersonCompanyState,
-            Status: this.addCompanyData.company.status,
             CityID: this.addCompanyData.company.cityID,
             PartnerInfoID: this.addCompanyData.company.partnerInfoID,
         };
@@ -375,8 +378,7 @@ export default class ContentBar extends Vue {
             companyInfo.ContactPersonPhoneNumber === '' ||
             companyInfo.ContactPersonCompanyState === '' ||
             companyInfo.CityID === 0 ||
-            companyInfo.PartnerInfoID === 0 ||
-            companyInfo.Status === 0
+            companyInfo.PartnerInfoID === 0
         ) {
 
         } else {
@@ -420,7 +422,7 @@ export default class ContentBar extends Vue {
             ContactPersonFullName: this.addCompanyData.company.contactPersonFullName,
             ContactPersonPhoneNumber: this.addCompanyData.company.contactPersonPhoneNumber,
             ContactPersonCompanyState: this.addCompanyData.company.contactPersonCompanyState,
-            Status: this.addCompanyData.company.status,
+            CompanyStatusID: this.addCompanyData.company.status,
             CityID: this.addCompanyData.company.cityID,
             PartnerInfoID: this.userPartnerInfo.partnerInfoID,
         };
@@ -623,13 +625,45 @@ export default class ContentBar extends Vue {
                     this.ModalCreateSource.components![7].error = false;
                 }
                 if (parseInt(value) != -1) {
-                    this.addCompanyData.company.status = this.CompanyStatuses[parseInt(value)].id;
+                    let statuses = await this.modalSourceWorker.getOptions(UserRoles.ADMIN, Enity.COMPANY_STATUS);
+                    this.addCompanyData.company.status = statuses![parseInt(value)].id;
                 }
                 break;
             case 'companyDocument':
                 this.addCompanyData.companyInfo.file = value[0];
                 break;
             default:
+                break;
+        }
+    }
+
+    public async dealBlockClick(elem: any, event: string) {
+        switch (event) {
+            case 'select':
+                this.ModalInformSource = {
+                    title: 'Информация о компании',
+                    components: [
+                        {
+                            name: 'dealNameLabel', // for emit
+                            title: 'Название сделки',
+                            text: elem.dealName,
+                            type: FormType.LABELBOX,
+                        },
+                        {
+                            name: 'companyNameLabel', // for emit
+                            title: 'Компания',
+                            text: elem.company.companyName,
+                            type: FormType.LABELBOX,
+                        },
+                        {
+                            name: 'dealStatusLabel', // for emit
+                            title: 'Статус',
+                            text: elem.companyStatus.companyStatusName,
+                            type: FormType.LABELBOX,
+                        },
+                    ],
+                };
+                this.modalInfoDealState = true;
                 break;
         }
     }
@@ -704,7 +738,7 @@ export default class ContentBar extends Vue {
                             required: true,
                             error: true,
                             errorText: FormErrors.SINGLE_EMPTY,
-                            selectOptions: this.CompanyStatuses,
+                            selectOptions: await this.modalSourceWorker.getOptions(UserRoles.PARTNER, Enity.COMPANY_STATUS),
                             type: FormType.SELECTBOX,
                         },
                     ],
@@ -752,7 +786,7 @@ export default class ContentBar extends Vue {
                         {
                             name: 'companyCityNameLabel', // for emit
                             title: 'Статус', // Переход на статус
-                            text: this.getStatus(elem.status),
+                            text: elem.status.companyStatusName,
                             type: FormType.LABELBOX,
                         },
                     ],
@@ -865,8 +899,8 @@ export default class ContentBar extends Vue {
                             required: true,
                             error: false,
                             errorText: FormErrors.SINGLE_EMPTY,
-                            text: new String(elem.status + 1),
-                            selectOptions: this.CompanyStatuses,
+                            text: new String(elem.status.companyStatusID),
+                            selectOptions: await this.modalSourceWorker.getOptions(UserRoles.PARTNER, Enity.COMPANY_STATUS),
                             type: FormType.SELECTBOX,
                         },
                     ],
@@ -921,7 +955,8 @@ export default class ContentBar extends Vue {
             case 'companyStatus':
                 this.ModalCreateSource.components![6].error = parseInt(value) === 0;
                 if (parseInt(value) != -1) {
-                    this.addCompanyData.company.status = this.CompanyStatuses[parseInt(value)].id;
+                    let statuses = await this.modalSourceWorker.getOptions(UserRoles.ADMIN, Enity.COMPANY_STATUS);
+                    this.addCompanyData.company.status = statuses![parseInt(value)].id;
                 }
                 break;
             case 'companyDocument':
@@ -1029,15 +1064,6 @@ export default class ContentBar extends Vue {
                             title: 'Документ',
                             type: FormType.FILEBOX,
                         },
-                        {
-                            name: 'companyStatus',
-                            title: 'Статус',
-                            required: true,
-                            error: true,
-                            errorText: FormErrors.SINGLE_EMPTY,
-                            selectOptions: this.CompanyStatuses,
-                            type: FormType.SELECTBOX,
-                        },
                     ],
                 };
                 // делаем видимой модалку
@@ -1086,12 +1112,6 @@ export default class ContentBar extends Vue {
                             title: 'Партнер',
                             text: elem.partnerInfo.fullName + ' - ' + elem.partnerInfo.companyName + ' - ' + elem.partnerInfo.city.cityName,
                             hasHint: false,
-                            type: FormType.LABELBOX,
-                        },
-                        {
-                            name: 'companyCityNameLabel', // for emit
-                            title: 'Статус', // Переход на статус
-                            text: elem.company.status.companyStatusName,
                             type: FormType.LABELBOX,
                         },
                     ],
@@ -1147,7 +1167,7 @@ export default class ContentBar extends Vue {
 
                 }
 
-                
+
 
                 // формирование структуры отображения модального окна
                 this.ModalCreateSource = {
@@ -1205,7 +1225,7 @@ export default class ContentBar extends Vue {
                             required: true,
                             error: false,
                             errorText: FormErrors.SINGLE_EMPTY,
-                            text: new String(elem.company.status.companyStatusID - 1),
+                            text: new String(elem.company.status.companyStatusID),
                             selectOptions: await this.modalSourceWorker.getOptions(UserRoles.ADMIN, Enity.COMPANY_STATUS),
                             type: FormType.SELECTBOX,
                         },
@@ -1631,9 +1651,9 @@ export default class ContentBar extends Vue {
                 this.ModalCreateSource = this.modalSourceWorker.GetSource(UserRoles.ADMIN, Enity.DOCUMENT);
                 this.documentCreateModalState = true;
                 break;
-            
+
             case 'edit':
-                
+
 
                 break;
             case 'delete':

@@ -21,6 +21,7 @@ import DocumentAPI from '@/API/DocumentAPI';
 import Company from '@/Models/DataBase/Company';
 import AmoAPI from '@/API/AMO/AmoAPI';
 import StatusAmoAPI from '@/API/AMO/StatusAmoAPI';
+import DealAPI from '@/API/DealAPI';
 
 @Component({ components: { SideBar, ContentBar, ModalView } })
 export default class WorkSpaceView extends Vue {
@@ -62,6 +63,11 @@ export default class WorkSpaceView extends Vue {
         {
             name: 'companies',
             title: 'Компании',
+            href: '',
+        },
+        {
+            name: 'deals',
+            title: 'Сделки',
             href: '',
         },
         {
@@ -112,6 +118,7 @@ export default class WorkSpaceView extends Vue {
             // загрузка контента
             const companyAPI = new CompanyApi();
             this.companiesSource = await companyAPI.GetCompanies();
+            console.log(this.companiesSource);
         } else if (link === 'documents') {
             // загрузка контента
             const docAPI = new DocumentAPI();
@@ -137,6 +144,7 @@ export default class WorkSpaceView extends Vue {
             const partnerAPI = new PartnerInfoApi();
             const companyAPI = new CompanyApi();
             const docAPI = new DocumentAPI();
+            const dealAPI = new DealAPI();
 
             // AMO MIDDLEWARE check____________
             let resp = await statusAmoAPI.UpdateStatuses();
@@ -146,6 +154,8 @@ export default class WorkSpaceView extends Vue {
 
             // загрузка статусов компаний
             this.$store.commit('SET_COMPANY_STATUSES', await companyAPI.GetStatuses());
+            this.$store.commit('SET_ALL_DEALS', await dealAPI.GetDeals());
+            console.log(this.$store.getters.ALL_DEALS);
 
             const data = JSON.parse(localStorage.user);
             this.user = new UserLoginDTOResponse(

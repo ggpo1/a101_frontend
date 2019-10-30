@@ -30,7 +30,6 @@
           <div class="info-block">{{ item.contactPersonCompanyState }}</div>
           <div class="info-block">{{ item.contactPersonPhoneNumber }}</div>
           <div class="info-block">{{ item.city.cityName }}</div>
-          <div class="info-block">{{ item.status.companyStatusName }}</div>
         </div>
       </div>
       <div v-else-if="modalPage2State === 'documents'">
